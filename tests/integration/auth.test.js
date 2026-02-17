@@ -55,4 +55,28 @@ describe('Auth API Integration Test', () => {
       expect(res.statusCode).toEqual(401);
     });
   });
+
+  describe('GET /api/auth/me (Protected Route)', () => {
+    it('should return 401 if no token provided', async () => {
+      const res = await request(app).get('/api/auth/me');
+      expect(res.statusCode).toEqual(401);
+    });
+
+    it('should return 200 if valid token provided', async () => {
+      // 1. Login dulu buat dapet token
+      const loginRes = await request(app)
+        .post('/api/auth/login')
+        .send({ email: 'tes@student.com', password: 'Password123!' });
+      
+      const token = loginRes.body.data.token;
+
+      // 2. Akses rute rahasia pake token
+      const res = await request(app)
+        .get('/api/auth/me')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.data).toHaveProperty('username', 'mahasiswaganteng');
+    });
+  });
 });

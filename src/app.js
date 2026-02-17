@@ -6,6 +6,8 @@ const dotenv = require('dotenv');
 const subforumRoutes = require('./api/routes/subforumRoutes');
 const authRoutes = require('./api/routes/authRoutes');
 
+const authMiddleware = require('./api/middlewares/authMiddleware');
+
 dotenv.config();
 
 const app = express();
@@ -24,6 +26,14 @@ app.get('/', (req, res) => {
   res.json({
     message: "Selamat datang di API Forum SAINTEK!",
     status: "Server is running perfectly"
+  });
+});
+
+// Rute testing untuk mengecek siapa yang login
+app.get('/api/auth/me', authMiddleware, (req, res) => {
+  res.json({
+    status: 'success',
+    data: req.user // req.user ini diisi oleh authMiddleware
   });
 });
 
