@@ -1,0 +1,15 @@
+{
+  "name": "forum-saintek-api",
+  "description": "REST API untuk Forum SAINTEK",
+  "version": "1.0.0",
+  "main": "src/app.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "node src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alfath Rozaqi",
+  "license": "ISC"
+}

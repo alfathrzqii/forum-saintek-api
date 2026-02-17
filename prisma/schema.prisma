@@ -1,0 +1,86 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// --- Entitas User ---
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  username  String    @unique
+  password  String
+  prodi     String    // Misal: "Sains Data", "Informatika"
+  threads   Thread[]
+  comments  Comment[]
+  votes     Vote[]
+  createdAt DateTime  @default(now())
+}
+
+// --- Entitas Subforum ---
+model Subforum {
+  id          String   @id @default(uuid())
+  name        String   @unique // Misal: "Sains Data"
+  slug        String   @unique // Misal: "sains-data"
+  description String?
+  threads     Thread[]
+}
+
+// --- Entitas Thread ---
+model Thread {
+  id           String    @id @default(uuid())
+  title        String
+  content      String    @db.Text
+  imageUrl     String?   // URL dari Cloudinary
+  isAnonymous  Boolean   @default(false) // Untuk fitur Saintekfess
+  author       User      @relation(fields: [authorId], references: [id])
+  authorId     String
+  subforum     Subforum  @relation(fields: [subforumId], references: [id])
+  subforumId   String
+  comments     Comment[]
+  votes        Vote[]
+  createdAt    DateTime  @default(now())
+}
+
+// --- Entitas Comment (Nested/Reddit Style) ---
+model Comment {
+  id        String   @id @default(uuid())
+  content   String   @db.Text
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  thread    Thread   @relation(fields: [threadId], references: [id])
+  threadId  String
+  
+  // Self-relation untuk nested comment
+  parentId  String?
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentReplies")
+  
+  votes     Vote[]
+  createdAt DateTime @default(now())
+}
+
+// --- Entitas Vote ---
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
+}
+
+model Vote {
+  id        String   @id @default(uuid())
+  type      VoteType
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  
+  // Vote bisa di Thread ATAU di Comment
+  thread    Thread?  @relation(fields: [threadId], references: [id])
+  threadId  String?
+  comment   Comment? @relation(fields: [commentId], references: [id])
+  commentId String?
+
+  @@unique([userId, threadId])  // Satu user cuma bisa vote 1x per thread
+  @@unique([userId, commentId]) // Satu user cuma bisa vote 1x per comment
+}
