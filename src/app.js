@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const dotenv = require('dotenv');
 
 const subforumRoutes = require('./api/routes/subforumRoutes');
+const authRoutes = require('./api/routes/authRoutes');
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/subforums', subforumRoutes);
+app.use('/api/auth', authRoutes);
 
 // Route Testing (Health Check)
 app.get('/', (req, res) => {
