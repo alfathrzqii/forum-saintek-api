@@ -1,5 +1,5 @@
 const authService = require('../../services/authService');
-const { registerSchema } = require('../../validators/authValidator');
+const { registerSchema, loginSchema } = require('../../validators/authValidator');
 
 const register = async (req, res) => {
   try {
@@ -13,7 +13,6 @@ const register = async (req, res) => {
       data: user
     });
   } catch (error) {
-    console.error(error)
     // Jika error dari Zod, ambil pesannya saja
     const message = error.errors ? error.errors[0].message : error.message;
     res.status(400).json({
@@ -23,6 +22,28 @@ const register = async (req, res) => {
   }
 };
 
+const login = async (req, res) => {
+  try {
+    const validatedData = loginSchema.parse(req.body);
+    const result = await authService.loginUser(validatedData);
+
+    res.status(200).json({
+      status: 'success',
+      data: result
+    });
+  } catch (error) {
+    const message = error.errors ? error.errors[0].message : error.message;
+    // Gunakan 401 jika kredensial salah
+    const statusCode = message === 'Email atau password salah' ? 401 : 400;
+    
+    res.status(statusCode).json({
+      status: 'error',
+      message: message
+    });
+  }
+};
+
 module.exports = {
-  register
+  register,
+  login
 };

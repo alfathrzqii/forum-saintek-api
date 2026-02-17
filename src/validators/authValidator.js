@@ -7,6 +7,12 @@ const registerSchema = z.object({
   prodi: z.string().min(2, { message: "Prodi harus diisi" })
 });
 
+const loginSchema = z.object({
+  email: z.string().email({ message: "Format email tidak valid" }),
+  password: z.string().min(1, { message: "Password harus diisi" })
+});
+
 module.exports = {
-  registerSchema
+  registerSchema,
+  loginSchema
 };

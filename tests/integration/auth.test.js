@@ -30,4 +30,29 @@ describe('Auth API Integration Test', () => {
       expect(res.body.data).not.toHaveProperty('password');
     });
   });
+
+  describe('POST /api/auth/login', () => {
+    it('should return 200 and a token when credentials are valid', async () => {
+      const credentials = {
+        email: 'tes@student.com',
+        password: 'Password123!'
+      };
+
+      const res = await request(app)
+        .post('/api/auth/login')
+        .send(credentials);
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toHaveProperty('status', 'success');
+      expect(res.body.data).toHaveProperty('token');
+    });
+
+    it('should return 401 for invalid password', async () => {
+      const res = await request(app)
+        .post('/api/auth/login')
+        .send({ email: 'tes@student.com', password: 'SalahPassword' });
+
+      expect(res.statusCode).toEqual(401);
+    });
+  });
 });
