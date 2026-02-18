@@ -4,6 +4,10 @@ const findUserByEmail = async (email) => {
   return await prisma.user.findUnique({ where: { email } });
 };
 
+const findUserByUsername = async (username) => {
+  return await prisma.user.findUnique({ where: { username } });
+};
+
 const createUser = async (userData) => {
   return await prisma.user.create({
     data: userData,
@@ -11,13 +15,31 @@ const createUser = async (userData) => {
       id: true,
       email: true,
       username: true,
+      fullName: true,
+      prodi: true,
+      role: true,
+      createdAt: true
+    }
+  });
+};
+
+const findAllUsers = async () => {
+  return await prisma.user.findMany({
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      fullName: true,
+      role: true,
       prodi: true,
       createdAt: true
     }
   });
 };
 
-module.exports = {
+module.exports = { 
   findUserByEmail,
-  createUser
+  findUserByUsername,
+  createUser,
+  findAllUsers
 };

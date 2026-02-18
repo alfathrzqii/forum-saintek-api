@@ -4,7 +4,8 @@ const helmet = require('helmet');
 const dotenv = require('dotenv');
 
 const subforumRoutes = require('./api/routes/subforumRoutes');
-const authRoutes = require('./api/routes/authRoutes');
+const userRoutes = require('./api/routes/userRoutes');
+const authenticationRoutes = require('./api/routes/authenticationRoutes');
 
 const authMiddleware = require('./api/middlewares/authMiddleware');
 
@@ -19,7 +20,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/subforums', subforumRoutes);
-app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/authentications', authenticationRoutes);
 
 // Route Testing (Health Check)
 app.get('/', (req, res) => {
