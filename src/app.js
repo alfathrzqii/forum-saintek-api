@@ -1,37 +1,30 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const dotenv = require('dotenv');
 const pinoHttp = require('pino-http');
 
 const logger = require('./utils/logger');
 const config = require('./config');
 
+// Routes
 const subforumRoutes = require('./api/routes/subforumRoutes');
 const userRoutes = require('./api/routes/userRoutes');
 const authenticationRoutes = require('./api/routes/authenticationRoutes');
 
+// Middlewares
+const NotFoundError = require('./exceptions/NotFoundError');
 const errorMiddleware = require('./api/middlewares/errorMiddleware');
-const authenticationMiddleware = require('./api/middlewares/authenticationMiddleware');
-
-dotenv.config();
 
 const app = express();
 const PORT = config.app.port;
 
-// Middleware Dasar
+// 1. MIDDLEWARE DASAR (Keamanan & Logging)
 app.use(pinoHttp({ logger }));
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/subforums', subforumRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/authentications', authenticationRoutes);
-
-app.use(errorMiddleware);
-
-// Route Testing (Health Check)
+// 2. PUBLIC ROUTES (Health Check)
 app.get('/', (req, res) => {
   res.json({
     message: "Selamat datang di API Forum SAINTEK!",
@@ -39,15 +32,20 @@ app.get('/', (req, res) => {
   });
 });
 
-// Rute testing untuk mengecek siapa yang login
-app.get('/api/auth/me', authenticationMiddleware, (req, res) => {
-  res.json({
-    status: 'success',
-    data: req.user // req.user ini diisi oleh authenticationMiddleware
-  });
+// 3. API ROUTES (Business Logic)
+app.use('/api/subforums', subforumRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/authentications', authenticationRoutes);
+
+// 4. 404 HANDLER (Menangkap rute yang tidak terdaftar)
+app.use((req, res, next) => {
+  next(new NotFoundError(`Rute ${req.originalUrl} tidak ditemukan`));
 });
 
-// Menjalankan Server
+// 5. ERROR MIDDLEWARE
+app.use(errorMiddleware);
+
+// 6. MENJALANKAN SERVER
 if (config.app.nodeEnv !== 'test') {
   app.listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`);
