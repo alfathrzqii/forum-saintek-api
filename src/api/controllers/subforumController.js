@@ -1,6 +1,6 @@
 const subforumService = require('../../services/subforumService');
 
-const getAll = async (req, res) => {
+const getAll = async (req, res, next) => {
   try {
     const subforums = await subforumService.getSubforumList();
     
@@ -9,10 +9,7 @@ const getAll = async (req, res) => {
       data: subforums
     });
   } catch (error) {
-    res.status(500).json({
-      status: 'error',
-      message: error.message
-    });
+    next(error)
   }
 };
 

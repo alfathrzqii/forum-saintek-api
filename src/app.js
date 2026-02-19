@@ -9,6 +9,7 @@ const subforumRoutes = require('./api/routes/subforumRoutes');
 const userRoutes = require('./api/routes/userRoutes');
 const authenticationRoutes = require('./api/routes/authenticationRoutes');
 
+const errorMiddleware = require('./api/middlewares/errorMiddleware');
 const authenticationMiddleware = require('./api/middlewares/authenticationMiddleware');
 
 dotenv.config();
@@ -25,6 +26,8 @@ app.use(express.json());
 app.use('/api/subforums', subforumRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/authentications', authenticationRoutes);
+
+app.use(errorMiddleware);
 
 // Route Testing (Health Check)
 app.get('/', (req, res) => {

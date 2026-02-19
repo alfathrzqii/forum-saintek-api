@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken');
 const userRepository = require('../repositories/userRepository');
 const authRepository = require('../repositories/authenticationRepository');
 
+const AuthenticationError = require('../exceptions/AuthenticationError');
+const InvariantError = require('../exceptions/InvariantError');
+
 const generateTokens = (payload) => {
   const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, { expiresIn: '15m' });
   const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_KEY, { expiresIn: '7d' });
@@ -12,7 +15,7 @@ const generateTokens = (payload) => {
 const login = async ({ email, password }) => {
   const user = await userRepository.findUserByEmail(email);
   if (!user || !(await bcrypt.compare(password, user.password))) {
-    throw new Error('Kredensial tidak valid');
+    throw new AuthenticationError('Kredensial tidak valid');
   }
 
   const payload = { id: user.id, role: user.role, prodi: user.prodi };
@@ -27,7 +30,7 @@ const login = async ({ email, password }) => {
 const refresh = async (refreshToken) => {
   // 1. Cek apakah token ada di DB
   const tokenInDb = await authRepository.checkToken(refreshToken);
-  if (!tokenInDb) throw new Error('Refresh token tidak valid');
+  if (!tokenInDb) throw new InvariantError('Refresh token tidak valid');
 
   try {
     // 2. Verifikasi token
@@ -42,7 +45,7 @@ const refresh = async (refreshToken) => {
 
     return newAccessToken;
   } catch (error) {
-    throw new Error('Refresh token kadaluarsa');
+    throw new AuthenticationError('Refresh token kadaluarsa');
   }
 };
 

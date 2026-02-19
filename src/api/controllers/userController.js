@@ -1,7 +1,7 @@
 const userService = require('../../services/userService');
 const { createUserSchema } = require('../../validators/userValidator');
 
-const postUser = async (req, res) => {
+const postUser = async (req, res, next) => {
   try {
     const payload = createUserSchema.parse(req.body);
     const user = await userService.register(payload);
@@ -12,12 +12,11 @@ const postUser = async (req, res) => {
       data: user
     });
   } catch (error) {
-    const message = error.errors ? error.errors[0].message : error.message;
-    res.status(400).json({ status: 'error', message });
+    next(error)
   }
 };
 
-const getAllUsers = async (req, res) => {
+const getAllUsers = async (req, res, next) => {
   try {
     const users = await userService.getAllUsers();
     res.status(200).json({
@@ -25,7 +24,7 @@ const getAllUsers = async (req, res) => {
       data: users
     });
   } catch (error) {
-    res.status(500).json({ status: 'error', message: error.message });
+    next(error)
   }
 };
 

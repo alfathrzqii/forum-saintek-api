@@ -1,7 +1,7 @@
 const authenticationService = require('../../services/authenticationService');
 const { loginSchema, refreshTokenSchema } = require('../../validators/authenticationValidator');
 
-const postAuthentication = async (req, res) => {
+const postAuthentication = async (req, res, next) => {
   try {
     const payload = loginSchema.parse(req.body);
     const { accessToken, refreshToken } = await authenticationService.login(payload);
@@ -12,13 +12,11 @@ const postAuthentication = async (req, res) => {
       data: { accessToken, refreshToken }
     });
   } catch (error) {
-    const message = error.errors ? error.errors[0].message : error.message;
-    const statusCode = message === 'Kredensial tidak valid' ? 401 : 400;
-    res.status(statusCode).json({ status: 'error', message });
+    next(error)
   }
 };
 
-const putAuthentication = async (req, res) => {
+const putAuthentication = async (req, res, next) => {
   try {
     const { refreshToken } = refreshTokenSchema.parse(req.body);
     const accessToken = await authenticationService.refresh(refreshToken);
@@ -29,12 +27,11 @@ const putAuthentication = async (req, res) => {
       data: { accessToken }
     });
   } catch (error) {
-    const message = error.errors ? error.errors[0].message : error.message;
-    res.status(400).json({ status: 'error', message });
+    next(error)
   }
 };
 
-const deleteAuthentication = async (req, res) => {
+const deleteAuthentication = async (req, res, next) => {
   try {
     const { refreshToken } = refreshTokenSchema.parse(req.body);
     await authenticationService.logout(refreshToken);
@@ -44,8 +41,7 @@ const deleteAuthentication = async (req, res) => {
       message: 'Refresh token berhasil dihapus (Logout berhasil)'
     });
   } catch (error) {
-    const message = error.errors ? error.errors[0].message : error.message;
-    res.status(400).json({ status: 'error', message });
+    next(error)
   }
 };
 
