@@ -14,7 +14,7 @@ const errorMiddleware = (err, req, res, next) => {
   if (err.name === 'ZodError') {
     return res.status(400).json({
       status: 'error',
-      message: err.errors[0].message,
+      message: err.issues[0].message,
     });
   }
 
