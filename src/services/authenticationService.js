@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const config = require('../config');
 const userRepository = require('../repositories/userRepository');
 const authRepository = require('../repositories/authenticationRepository');
 
@@ -7,8 +8,8 @@ const AuthenticationError = require('../exceptions/AuthenticationError');
 const InvariantError = require('../exceptions/InvariantError');
 
 const generateTokens = (payload) => {
-  const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, { expiresIn: '15m' });
-  const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_KEY, { expiresIn: '7d' });
+  const accessToken = jwt.sign(payload, config.jwt.accessTokenKey, { expiresIn: config.jwt.accessTokenAge });
+  const refreshToken = jwt.sign(payload, config.jwt.refreshTokenKey, { expiresIn: '7d' });
   return { accessToken, refreshToken };
 };
 
@@ -34,12 +35,12 @@ const refresh = async (refreshToken) => {
 
   try {
     // 2. Verifikasi token
-    const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_KEY);
+    const payload = jwt.verify(refreshToken, config.jwt.refreshTokenKey);
     
     // 3. Buat Access Token baru
     const newAccessToken = jwt.sign(
       { id: payload.id, role: payload.role, prodi: payload.prodi },
-      process.env.ACCESS_TOKEN_KEY,
+      config.jwt.accessTokenKey,
       { expiresIn: '15m' }
     );
 

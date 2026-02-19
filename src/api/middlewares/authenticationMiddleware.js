@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const config = require('../../config');
 const userRepository = require('../../repositories/userRepository');
 
 const authenticationMiddleware = async (req, res, next) => {
@@ -10,7 +11,7 @@ const authenticationMiddleware = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
+    const decoded = jwt.verify(token, config.jwt.accessTokenKey);
     
     // PENGECEKAN EKSISTENSI USER
     const user = await userRepository.findUserById(decoded.id);

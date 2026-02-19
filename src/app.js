@@ -3,7 +3,9 @@ const cors = require('cors');
 const helmet = require('helmet');
 const dotenv = require('dotenv');
 const pinoHttp = require('pino-http');
+
 const logger = require('./utils/logger');
+const config = require('./config');
 
 const subforumRoutes = require('./api/routes/subforumRoutes');
 const userRoutes = require('./api/routes/userRoutes');
@@ -15,7 +17,7 @@ const authenticationMiddleware = require('./api/middlewares/authenticationMiddle
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = config.app.port;
 
 // Middleware Dasar
 app.use(pinoHttp({ logger }));
@@ -46,7 +48,7 @@ app.get('/api/auth/me', authenticationMiddleware, (req, res) => {
 });
 
 // Menjalankan Server
-if (process.env.NODE_ENV !== 'test') {
+if (config.app.nodeEnv !== 'test') {
   app.listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`);
   });
