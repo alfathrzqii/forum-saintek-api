@@ -1,6 +1,6 @@
 const roleMiddleware = (allowedRoles) => {
   return (req, res, next) => {
-    // req.user didapat dari authMiddleware sebelumnya
+    // req.user didapat dari authenticationMiddleware sebelumnya
     if (!req.user || !allowedRoles.includes(req.user.role)) {
       return res.status(403).json({
         status: 'error',

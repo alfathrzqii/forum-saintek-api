@@ -7,7 +7,7 @@ const subforumRoutes = require('./api/routes/subforumRoutes');
 const userRoutes = require('./api/routes/userRoutes');
 const authenticationRoutes = require('./api/routes/authenticationRoutes');
 
-const authMiddleware = require('./api/middlewares/authMiddleware');
+const authenticationMiddleware = require('./api/middlewares/authenticationMiddleware');
 
 dotenv.config();
 
@@ -32,10 +32,10 @@ app.get('/', (req, res) => {
 });
 
 // Rute testing untuk mengecek siapa yang login
-app.get('/api/auth/me', authMiddleware, (req, res) => {
+app.get('/api/auth/me', authenticationMiddleware, (req, res) => {
   res.json({
     status: 'success',
-    data: req.user // req.user ini diisi oleh authMiddleware
+    data: req.user // req.user ini diisi oleh authenticationMiddleware
   });
 });
 
