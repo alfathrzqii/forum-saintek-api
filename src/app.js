@@ -25,7 +25,7 @@ app.use(cors());
 app.use(express.json());
 
 // 2. PUBLIC ROUTES (Health Check)
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.json({
     message: "Selamat datang di API Forum SAINTEK!",
     status: "Server is running perfectly"

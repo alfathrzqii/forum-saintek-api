@@ -51,7 +51,8 @@ const refresh = async (refreshToken) => {
 };
 
 const logout = async (refreshToken) => {
-  await authRepository.checkToken(refreshToken);
+  const tokenInDb = await authRepository.checkToken(refreshToken);
+  if (!tokenInDb) throw new InvariantError('Refresh token tidak valid');
   await authRepository.deleteToken(refreshToken);
 };
 
