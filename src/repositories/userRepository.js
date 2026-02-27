@@ -11,7 +11,14 @@ const findUserByUsername = async (username) => {
 const findUserById = async (id) => {
   return await prisma.user.findUnique({
     where: { id },
-    select: { id: true, role: true, prodi: true }
+    select: { 
+      id: true,
+      email: true,
+      username: true,
+      fullName: true,
+      role: true,
+      prodi: true
+    }
   });
 };
 

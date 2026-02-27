@@ -29,6 +29,16 @@ describe('Core Infrastructure & Middleware', () => {
     await prisma.$disconnect();
   });
 
+  describe('GET /api (Health Check)', () => {
+    it('should return 200 and success status', async () => {
+      const res = await request(app).get('/api');
+      
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.status).toEqual('success');
+      expect(res.body.message).toContain('Selamat datang');
+    });
+  });
+
   describe('Global 404 Handler', () => {
     it('should return 404 JSON for non-existent routes', async () => {
       const res = await request(app).get('/api/v1/rute-yang-tidak-ada');
@@ -61,12 +71,12 @@ describe('Core Infrastructure & Middleware', () => {
       expect(res.body.message).toMatch(/Token tidak ditemukan/);
     });
 
-    it('should return 403 if token is invalid or fake', async () => {
+    it('should return 401 if token is invalid or fake', async () => {
       const res = await request(app)
         .get('/api/users/me')
         .set('Authorization', 'Bearer token-asal-asalan');
 
-      expect(res.statusCode).toEqual(403);
+      expect(res.statusCode).toEqual(401);
       expect(res.body.message).toMatch(/Token tidak valid/);
     });
 

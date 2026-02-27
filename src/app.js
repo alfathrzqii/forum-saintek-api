@@ -27,8 +27,8 @@ app.use(express.json());
 // 2. PUBLIC ROUTES (Health Check)
 app.get('/api', (req, res) => {
   res.json({
-    message: "Selamat datang di API Forum SAINTEK!",
-    status: "Server is running perfectly"
+    message: "Selamat datang di API Forum SAINTEK!, Server is running perfectly.",
+    status: "success"
   });
 });
 
@@ -46,6 +46,7 @@ app.use((req, res, next) => {
 app.use(errorMiddleware);
 
 // 6. MENJALANKAN SERVER
+/* istanbul ignore next */
 if (config.app.nodeEnv !== 'test') {
   app.listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`);

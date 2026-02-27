@@ -24,6 +24,7 @@ const requiredConfigs = [
 
 // Validasi saat aplikasi start
 requiredConfigs.forEach((key) => {
+  /* istanbul ignore next */
   if (!process.env[key]) {
     console.error(`[FATAL ERROR]: Variabel lingkungan "${key}" tidak ditemukan!`);
     console.error(`Pastikan file .env sudah dikonfigurasi dengan benar.`);

@@ -75,6 +75,31 @@ describe('Authentication Resource (Session)', () => {
       expect(res.statusCode).toEqual(200);
       expect(res.body.data).toHaveProperty('accessToken');
     });
+
+    it('should return 400 when refresh token is not found in database', async () => {
+      const validButNotPersistedToken = 'token.yang.formatnya.jwt.tapi.ngawur';
+
+      const res = await request(app)
+        .put('/api/authentications')
+        .send({ refreshToken: validButNotPersistedToken });
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.status).toEqual('error');
+      expect(res.body.message).toMatch(/tidak valid/i);
+    });
+
+    it('should return 401 when token exists in DB but is expired/invalid', async () => {
+      const junkToken = 'token.yang.formatnya.jwt.tapi.ngawur';
+      
+      // Masukkan manual ke DB lewat prisma
+      await prisma.authentication.create({ data: { token: junkToken } });
+
+      const res = await request(app)
+        .put('/api/authentications')
+        .send({ refreshToken: junkToken });
+
+      expect(res.statusCode).toEqual(401);
+    });
   });
 
   describe('DELETE /api/authentications', () => {
@@ -96,6 +121,18 @@ describe('Authentication Resource (Session)', () => {
       // 3. Pastikan token beneran ilang di DB
       const tokenInDb = await prisma.authentication.findUnique({ where: { token: rt } });
       expect(tokenInDb).toBeNull();
+    });
+
+    it('should return 400 when refresh token is not found in database', async () => {
+      const validButNotPersistedToken = 'token.yang.formatnya.jwt.tapi.ngawur';
+
+      const res = await request(app)
+        .delete('/api/authentications')
+        .send({ refreshToken: validButNotPersistedToken });
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.status).toEqual('error');
+      expect(res.body.message).toMatch(/tidak valid/i);
     });
   });
 });
