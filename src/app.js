@@ -10,6 +10,9 @@ const config = require('./config');
 const subforumRoutes = require('./api/routes/subforumRoutes');
 const userRoutes = require('./api/routes/userRoutes');
 const authenticationRoutes = require('./api/routes/authenticationRoutes');
+const threadRoutes = require('./api/routes/threadRoutes');
+const commentRoutes = require('./api/routes/commentRoutes');
+const voteRoutes = require('./api/routes/voteRoutes');
 
 // Middlewares
 const NotFoundError = require('./exceptions/NotFoundError');
@@ -36,6 +39,9 @@ app.get('/api', (req, res) => {
 app.use('/api/subforums', subforumRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/authentications', authenticationRoutes);
+app.use('/api/threads', threadRoutes);
+app.use('/api/comments', commentRoutes);
+app.use('/api/votes', voteRoutes);
 
 // 4. 404 HANDLER (Menangkap rute yang tidak terdaftar)
 app.use((req, res, next) => {

@@ -1,16 +1,13 @@
 const userService = require('../../services/userService');
 const { createUserSchema } = require('../../validators/userValidator');
+const { successResponse } = require('../../utils/response');
 
 const postUser = async (req, res, next) => {
   try {
     const payload = createUserSchema.parse(req.body);
     const user = await userService.register(payload);
 
-    res.status(201).json({
-      status: 'success',
-      message: 'User berhasil didaftarkan',
-      data: user
-    });
+    return successResponse(res, 'User berhasil didaftarkan', user, 201);
   } catch (error) {
     next(error)
   }
@@ -19,10 +16,7 @@ const postUser = async (req, res, next) => {
 const getAllUsers = async (req, res, next) => {
   try {
     const users = await userService.getAllUsers();
-    res.status(200).json({
-      status: 'success',
-      data: users
-    });
+    return successResponse(res, 'Daftar user berhasil dimuat', users);
   } catch (error) {
     next(error)
   }
