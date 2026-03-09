@@ -1,5 +1,6 @@
 const voteService = require('../../services/voteService');
 const { voteSchema } = require('../../validators/voteValidator');
+const { successResponse } = require('../../utils/response');
 
 const toggleVote = async (req, res, next) => {
   try {
@@ -14,11 +15,7 @@ const toggleVote = async (req, res, next) => {
     if (result.action === 'deleted') message = 'Vote berhasil dihapus';
     if (result.action === 'updated') message = 'Vote berhasil diperbarui';
 
-    res.json({
-      status: 'success',
-      message,
-      data: result
-    });
+    return successResponse(res, message, result);
   } catch (error) {
     next(error);
   }
