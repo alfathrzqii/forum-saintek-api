@@ -8,7 +8,8 @@ const toggleVote = async (req, res, next) => {
     const validatedData = voteSchema.parse(req.body);
 
     // 2. Eksekusi logika toggle di Service
-    const result = await voteService.toggleVote(req.user.id, validatedData);
+    const context = { userId: req.user.id, role: req.user.role };
+    const result = await voteService.toggleVote(context, validatedData);
 
     // 3. Berikan feedback yang spesifik
     let message = 'Vote berhasil diberikan';

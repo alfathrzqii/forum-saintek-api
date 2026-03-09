@@ -2,10 +2,11 @@ const threadRepository = require('../repositories/threadRepository');
 const subforumRepository = require('../repositories/subforumRepository');
 const NotFoundError = require('../exceptions/NotFoundError');
 const AuthenticationError = require('../exceptions/AuthenticationError');
+const AuthorizationError = require('../exceptions/AuthorizationError');
 
-const createThread = async (context, { title, content, subforumId, isAnonymous, imageUrl }) => {
+const createThread = async (context, { title, content, subforumSlug, isAnonymous, imageUrl }) => {
   const { userId } = context;
-  const subforum = await subforumRepository.getSubforumBySlug(subforumId); 
+  const subforum = await subforumRepository.getSubforumBySlug(subforumSlug); 
   
   if (!subforum) throw new NotFoundError('Subforum tidak ditemukan');
 
@@ -43,7 +44,7 @@ const deleteThread = async (threadId, context) => {
   if (!thread) throw new NotFoundError('Thread tidak ditemukan');
 
   if (thread.authorId !== userId && role !== 'ADMIN') {
-    throw new AuthenticationError('Anda tidak berhak menghapus thread ini');
+    throw new AuthorizationError('Anda tidak berhak menghapus thread ini');
   }
 
   return await threadRepository.deleteThread(threadId);

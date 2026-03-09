@@ -1,6 +1,7 @@
 const voteRepository = require('../repositories/voteRepository');
 
-const toggleVote = async (userId, { type, threadId, commentId }) => {
+const toggleVote = async (context, { type, threadId, commentId }) => {
+  const { userId } = context;
   const existingVote = await voteRepository.getExistingVote(userId, { threadId, commentId });
 
   if (existingVote) {

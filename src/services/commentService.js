@@ -2,7 +2,8 @@ const commentRepository = require('../repositories/commentRepository');
 const threadRepository = require('../repositories/threadRepository');
 const NotFoundError = require('../exceptions/NotFoundError');
 
-const createComment = async (userId, { content, threadId, parentId }) => {
+const createComment = async (context, { content, threadId, parentId }) => {
+  const { userId } = context;
   // 1. Pastikan thread ada
   const thread = await threadRepository.getThreadById(threadId);
   if (!thread) throw new NotFoundError('Thread tidak ditemukan');

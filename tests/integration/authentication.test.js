@@ -2,6 +2,9 @@ const request = require('supertest');
 const app = require('../../src/app');
 const prisma = require('../../src/utils/prisma');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+jest.setTimeout(30000);
 
 describe('Authentication Resource (Session)', () => {
   const testUser = {
@@ -17,8 +20,8 @@ describe('Authentication Resource (Session)', () => {
     await prisma.authentication.deleteMany();
     await prisma.user.deleteMany({ where: { email: testUser.email } });
 
-    // 2. Siapkan User untuk dites loginnya
-    const hashedPassword = await bcrypt.hash(testUser.password, 10);
+    // 2. Siapkan User untuk dites loginnya (salt 1 agar cepat di test)
+    const hashedPassword = await bcrypt.hash(testUser.password, 1);
     await prisma.user.create({
       data: {
         ...testUser,
@@ -77,7 +80,7 @@ describe('Authentication Resource (Session)', () => {
     });
 
     it('should return 400 when refresh token is not found in database', async () => {
-      const validButNotPersistedToken = 'token.yang.formatnya.jwt.tapi.ngawur';
+      const validButNotPersistedToken = jwt.sign({ id: 'any' }, 'any_key');
 
       const res = await request(app)
         .put('/api/authentications')
@@ -89,7 +92,7 @@ describe('Authentication Resource (Session)', () => {
     });
 
     it('should return 401 when token exists in DB but is expired/invalid', async () => {
-      const junkToken = 'token.yang.formatnya.jwt.tapi.ngawur';
+      const junkToken = jwt.sign({ id: 'any' }, 'wrong_key');
       
       // Masukkan manual ke DB lewat prisma
       await prisma.authentication.create({ data: { token: junkToken } });
@@ -124,7 +127,7 @@ describe('Authentication Resource (Session)', () => {
     });
 
     it('should return 400 when refresh token is not found in database', async () => {
-      const validButNotPersistedToken = 'token.yang.formatnya.jwt.tapi.ngawur';
+      const validButNotPersistedToken = jwt.sign({ id: 'any' }, 'any_key');
 
       const res = await request(app)
         .delete('/api/authentications')
