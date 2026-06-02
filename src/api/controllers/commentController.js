@@ -1,18 +1,17 @@
 const commentService = require('../../services/commentService');
-const { createCommentSchema } = require('../../validators/commentValidator');
 const { successResponse } = require('../../utils/response');
 
 const postComment = async (req, res, next) => {
   try {
-    const validatedData = createCommentSchema.parse(req.body);
     const context = { userId: req.user.id, role: req.user.role };
-    const comment = await commentService.createComment(context, validatedData);
+    const comment = await commentService.createComment(context, req.body);
 
     return successResponse(res, 'Komentar berhasil ditambahkan', comment, 201);
   } catch (error) {
     next(error);
   }
 };
+
 
 const getComments = async (req, res, next) => {
   try {

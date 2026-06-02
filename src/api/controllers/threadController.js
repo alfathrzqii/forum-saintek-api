@@ -1,19 +1,18 @@
 const threadService = require('../../services/threadService');
-const { createThreadSchema } = require('../../validators/threadValidator');
 const { successResponse } = require('../../utils/response');
+
 
 const postThread = async (req, res, next) => {
   try {
-    const validatedData = createThreadSchema.parse(req.body);
-
     const context = { userId: req.user.id, role: req.user.role };
-    const thread = await threadService.createThread(context, validatedData);
+    const thread = await threadService.createThread(context, req.body);
 
     return successResponse(res, 'Thread berhasil dipublikasikan', thread, 201);
   } catch (error) {
     next(error);
   }
 };
+
 
 const getThreads = async (req, res, next) => {
   try {

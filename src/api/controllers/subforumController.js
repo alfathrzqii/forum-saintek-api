@@ -1,17 +1,16 @@
 const subforumService = require('../../services/subforumService');
-const { createSubforumSchema } = require('../../validators/subforumValidator');
 const { successResponse } = require('../../utils/response');
 
 const postSubforum = async (req, res, next) => {
   try {
-    const validatedData = createSubforumSchema.parse(req.body);
-    const subforum = await subforumService.createSubforum(validatedData);
+    const subforum = await subforumService.createSubforum(req.body);
 
     return successResponse(res, 'Subforum berhasil dibuat', subforum, 201);
   } catch (error) {
     next(error);
   }
 };
+
 
 const getSubforums = async (req, res, next) => {
   try {
