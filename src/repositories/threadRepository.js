@@ -1,7 +1,21 @@
 const prisma = require('../utils/prisma');
 
+const mapThreadAuthor = (thread) => {
+  if (thread && thread.isAnonymous) {
+    return {
+      ...thread,
+      author: {
+        ...thread.author,
+        username: 'Saintekfess User',
+        fullName: 'Anonymous',
+      },
+    };
+  }
+  return thread;
+};
+
 const createThread = async (data) => {
-  return await prisma.thread.create({
+  const thread = await prisma.thread.create({
     data,
     include: {
       author: {
@@ -12,10 +26,11 @@ const createThread = async (data) => {
       }
     }
   });
+  return mapThreadAuthor(thread);
 };
 
 const getThreads = async (filters = {}) => {
-  return await prisma.thread.findMany({
+  const threads = await prisma.thread.findMany({
     where: filters,
     include: {
       author: {
@@ -30,10 +45,11 @@ const getThreads = async (filters = {}) => {
     },
     orderBy: { createdAt: 'desc' }
   });
+  return threads.map(mapThreadAuthor);
 };
 
 const getThreadById = async (id) => {
-  return await prisma.thread.findUnique({
+  const thread = await prisma.thread.findUnique({
     where: { id },
     include: {
       author: {
@@ -44,7 +60,9 @@ const getThreadById = async (id) => {
       }
     }
   });
+  return mapThreadAuthor(thread);
 };
+
 
 const deleteThread = async (id) => {
   return await prisma.thread.delete({

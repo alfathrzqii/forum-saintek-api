@@ -28,15 +28,9 @@ const getAllThreads = async (subforumSlug) => {
     if (subforum) filters.subforumId = subforum.id;
   }
 
-  const threads = await threadRepository.getThreads(filters);
-
-  return threads.map(thread => {
-    if (thread.isAnonymous) {
-      return { ...thread, author: { username: 'Saintekfess User', fullName: 'Anonymous' } };
-    }
-    return thread;
-  });
+  return await threadRepository.getThreads(filters);
 };
+
 
 const deleteThread = async (threadId, context) => {
   const { userId, role } = context;
