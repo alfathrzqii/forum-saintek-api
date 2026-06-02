@@ -14,12 +14,12 @@ describe('Vote API Integration Test', () => {
     await prisma.thread.deleteMany();
     await prisma.subforum.deleteMany({ where: { slug: 'test-vote-subforum' } });
     await prisma.user.deleteMany({
-      where: { email: 'user_vote@saintek.id' }
+      where: { email: 'user_vote@student.uin-suka.ac.id' }
     });
 
     // 2. Setup User & Login
     await request(app).post('/api/users').send({
-      email: 'user_vote@saintek.id',
+      email: 'user_vote@student.uin-suka.ac.id',
       username: 'uservote',
       password: 'Password123!',
       fullName: 'User Vote',
@@ -27,7 +27,7 @@ describe('Vote API Integration Test', () => {
     });
 
     const login = await request(app).post('/api/authentications').send({
-      email: 'user_vote@saintek.id',
+      email: 'user_vote@student.uin-suka.ac.id',
       password: 'Password123!'
     });
     userToken = login.body.data.accessToken;
@@ -44,7 +44,7 @@ describe('Vote API Integration Test', () => {
       data: {
         title: 'Thread for Voting',
         content: 'Content...',
-        authorId: (await prisma.user.findUnique({ where: { email: 'user_vote@saintek.id' } })).id,
+        authorId: (await prisma.user.findUnique({ where: { email: 'user_vote@student.uin-suka.ac.id' } })).id,
         subforumId: subforum.id
       }
     });

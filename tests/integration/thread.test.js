@@ -16,7 +16,7 @@ describe('Thread API Integration Test', () => {
     await prisma.subforum.deleteMany({ where: { slug: 'test-thread-subforum-long' } });
     await prisma.user.deleteMany({
       where: {
-        email: { in: ['user_thread@saintek.id', 'admin_thread@saintek.id'] }
+        email: { in: ['user_thread@student.uin-suka.ac.id', 'admin_thread@student.uin-suka.ac.id'] }
       }
     });
 
@@ -32,7 +32,7 @@ describe('Thread API Integration Test', () => {
 
     // 3. Setup ADMIN
     await request(app).post('/api/users').send({
-      email: 'admin_thread@saintek.id',
+      email: 'admin_thread@student.uin-suka.ac.id',
       username: 'adminthread',
       password: 'Password123!',
       fullName: 'Admin Thread',
@@ -40,13 +40,13 @@ describe('Thread API Integration Test', () => {
     });
     
     await prisma.user.update({
-      where: { email: 'admin_thread@saintek.id' },
+      where: { email: 'admin_thread@student.uin-suka.ac.id' },
       data: { role: 'ADMIN' }
     });
 
     // 4. Setup USER
     await request(app).post('/api/users').send({
-      email: 'user_thread@saintek.id',
+      email: 'user_thread@student.uin-suka.ac.id',
       username: 'userthread',
       password: 'Password123!',
       fullName: 'User Thread',
@@ -54,13 +54,13 @@ describe('Thread API Integration Test', () => {
     });
 
     const adminLogin = await request(app).post('/api/authentications').send({
-      email: 'admin_thread@saintek.id',
+      email: 'admin_thread@student.uin-suka.ac.id',
       password: 'Password123!'
     });
     adminToken = adminLogin.body.data.accessToken;
 
     const userLogin = await request(app).post('/api/authentications').send({
-      email: 'user_thread@saintek.id',
+      email: 'user_thread@student.uin-suka.ac.id',
       password: 'Password123!'
     });
     userToken = userLogin.body.data.accessToken;

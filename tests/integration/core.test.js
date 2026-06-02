@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 
 describe('Core Infrastructure & Middleware', () => {
   const testUser = {
-    email: 'core_test@saintek.id',
+    email: 'core_test@student.uin-suka.ac.id',
     username: 'coretester',
     password: 'Password123!',
     fullName: 'Core Tester',

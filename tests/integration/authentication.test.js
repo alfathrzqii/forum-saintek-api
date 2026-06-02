@@ -8,7 +8,7 @@ jest.setTimeout(30000);
 
 describe('Authentication Resource (Session)', () => {
   const testUser = {
-    email: 'auth_test@saintek.id',
+    email: 'auth_test@student.uin-suka.ac.id',
     username: 'authtester',
     password: 'Password123!',
     fullName: 'Auth Tester',
@@ -18,7 +18,14 @@ describe('Authentication Resource (Session)', () => {
   beforeAll(async () => {
     // 1. Bersihkan database dari data tes lama agar tidak konflik
     await prisma.authentication.deleteMany();
-    await prisma.user.deleteMany({ where: { email: testUser.email } });
+    await prisma.user.deleteMany({
+      where: {
+        OR: [
+          { email: testUser.email },
+          { username: testUser.username }
+        ]
+      }
+    });
 
     // 2. Siapkan User untuk dites loginnya (salt 1 agar cepat di test)
     const hashedPassword = await bcrypt.hash(testUser.password, 1);

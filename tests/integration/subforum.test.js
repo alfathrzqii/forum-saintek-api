@@ -19,14 +19,14 @@ describe('Subforum API Integration Test', () => {
     await prisma.user.deleteMany({
       where: {
         email: { 
-          in: ['admin_subforum@saintek.id'] 
+          in: ['admin_subforum@student.uin-suka.ac.id'] 
         }
       }
     });
 
     // 2. Setup ADMIN: Daftar -> Update Role -> Login
     await request(app).post('/api/users').send({
-      email: 'admin_subforum@saintek.id',
+      email: 'admin_subforum@student.uin-suka.ac.id',
       username: 'adminsubforum',
       password: 'Password123!',
       fullName: 'Admin Subforum',
@@ -35,12 +35,12 @@ describe('Subforum API Integration Test', () => {
     
     // Paksa role jadi ADMIN di database
     await prisma.user.update({
-      where: { email: 'admin_subforum@saintek.id' },
+      where: { email: 'admin_subforum@student.uin-suka.ac.id' },
       data: { role: 'ADMIN' }
     });
 
     const adminLogin = await request(app).post('/api/authentications').send({
-      email: 'admin_subforum@saintek.id',
+      email: 'admin_subforum@student.uin-suka.ac.id',
       password: 'Password123!'
     });
     adminToken = adminLogin.body.data.accessToken;

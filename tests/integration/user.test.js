@@ -12,14 +12,14 @@ describe('User Resource', () => {
     await prisma.user.deleteMany({
       where: {
         email: { 
-          in: ['test_auto@saintek.id', 'admin_test@saintek.id', 'user_test@saintek.id'] 
+          in: ['test_auto@student.uin-suka.ac.id', 'admin_test@student.uin-suka.ac.id', 'user_test@student.uin-suka.ac.id'] 
         }
       }
     });
 
     // 2. Setup ADMIN: Daftar -> Update Role -> Login
     await request(app).post('/api/users').send({
-      email: 'admin_test@saintek.id',
+      email: 'admin_test@student.uin-suka.ac.id',
       username: 'admintester',
       password: 'Password123!',
       fullName: 'Admin Tester',
@@ -28,19 +28,19 @@ describe('User Resource', () => {
     
     // Paksa role jadi ADMIN di database
     await prisma.user.update({
-      where: { email: 'admin_test@saintek.id' },
+      where: { email: 'admin_test@student.uin-suka.ac.id' },
       data: { role: 'ADMIN' }
     });
 
     const adminLogin = await request(app).post('/api/authentications').send({
-      email: 'admin_test@saintek.id',
+      email: 'admin_test@student.uin-suka.ac.id',
       password: 'Password123!'
     });
     adminToken = adminLogin.body.data.accessToken;
 
     // 3. Setup REGULAR USER: Daftar -> Login
     await request(app).post('/api/users').send({
-      email: 'user_test@saintek.id',
+      email: 'user_test@student.uin-suka.ac.id',
       username: 'usertester',
       password: 'Password123!',
       fullName: 'User Tester',
@@ -48,7 +48,7 @@ describe('User Resource', () => {
     });
 
     const userLogin = await request(app).post('/api/authentications').send({
-      email: 'user_test@saintek.id',
+      email: 'user_test@student.uin-suka.ac.id',
       password: 'Password123!'
     });
     userToken = userLogin.body.data.accessToken;
@@ -62,7 +62,7 @@ describe('User Resource', () => {
   describe('POST /api/users (Registration)', () => {
     it('should return 201 and create a new user', async () => {
       const newUser = {
-        email: 'test_auto@saintek.id',
+        email: 'test_auto@student.uin-suka.ac.id',
         username: 'autotester',
         password: 'Password123!',
         fullName: 'Auto Tester',
@@ -77,9 +77,9 @@ describe('User Resource', () => {
     });
 
     it('should return 400 if email already exists', async () => {
-      // Data yang sama dengan test_auto@saintek.id di atas
+      // Data yang sama dengan test_auto@student.uin-suka.ac.id di atas
       const res = await request(app).post('/api/users').send({
-        email: 'test_auto@saintek.id',
+        email: 'test_auto@student.uin-suka.ac.id',
         username: 'user_berbeda',
         password: 'Password123!',
         fullName: 'Nama Berbeda',
@@ -92,7 +92,7 @@ describe('User Resource', () => {
 
     it('should return 400 if username already exists but email is new', async () => {
       const res = await request(app).post('/api/users').send({
-        email: 'email_baru_sekali@saintek.id',
+        email: 'email_baru_sekali@student.uin-suka.ac.id',
         username: 'autotester',
         password: 'Password123!',
         fullName: 'User Baru',
@@ -115,7 +115,7 @@ describe('User Resource', () => {
       expect(res.body.status).toEqual('success');
       
       // Verifikasi data yang dikembalikan sesuai dengan user_test
-      expect(res.body.data).toHaveProperty('email', 'user_test@saintek.id');
+      expect(res.body.data).toHaveProperty('email', 'user_test@student.uin-suka.ac.id');
       expect(res.body.data).toHaveProperty('username', 'usertester');
       
       // Pastikan password tidak ikut bocor ke client!
@@ -138,7 +138,7 @@ describe('User Resource', () => {
       expect(res.body.status).toEqual('success');
       expect(Array.isArray(res.body.data)).toBe(true);
       // Memastikan admin ada di dalam list
-      expect(res.body.data.some(u => u.email === 'admin_test@saintek.id')).toBe(true);
+      expect(res.body.data.some(u => u.email === 'admin_test@student.uin-suka.ac.id')).toBe(true);
     });
 
     it('should return 403 (Forbidden) for regular USER', async () => {
