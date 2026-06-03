@@ -73,6 +73,7 @@ const getThreadById = async (id, tx = prisma) => {
       content: true,
       imageUrl: true,
       isAnonymous: true,
+      authorId: true,
       createdAt: true,
       author: {
         select: { id: true, username: true, fullName: true, prodi: true }
