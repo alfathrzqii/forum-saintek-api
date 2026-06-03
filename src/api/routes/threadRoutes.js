@@ -8,6 +8,7 @@ const { createThreadSchema } = require('../../validators/threadValidator');
 
 // Public: Siapa saja bisa baca thread
 router.get('/', threadController.getThreads);
+router.get('/:id', validate({ params: idParamSchema }), threadController.getThreadById);
 
 // Protected: Harus login untuk posting atau hapus
 router.post(

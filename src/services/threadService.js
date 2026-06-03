@@ -31,6 +31,12 @@ const getAllThreads = async (subforumSlug) => {
   return await threadRepository.getThreads(filters);
 };
 
+const getThreadById = async (id) => {
+  const thread = await threadRepository.getThreadById(id);
+  if (!thread) throw new NotFoundError('Thread tidak ditemukan');
+  return thread;
+};
+
 
 const deleteThread = async (threadId, context) => {
   const { userId, role } = context;
@@ -47,5 +53,6 @@ const deleteThread = async (threadId, context) => {
 module.exports = {
   createThread,
   getAllThreads,
+  getThreadById,
   deleteThread
 };

@@ -57,6 +57,9 @@ const getThreadById = async (id) => {
       },
       subforum: {
         select: { name: true, slug: true }
+      },
+      _count: {
+        select: { comments: true, votes: true }
       }
     }
   });

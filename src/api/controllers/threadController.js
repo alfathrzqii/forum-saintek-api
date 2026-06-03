@@ -25,6 +25,17 @@ const getThreads = async (req, res, next) => {
   }
 };
 
+const getThreadById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const thread = await threadService.getThreadById(id);
+
+    return successResponse(res, 'Detail thread berhasil dimuat', thread);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const deleteThread = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -40,5 +51,6 @@ const deleteThread = async (req, res, next) => {
 module.exports = {
   postThread,
   getThreads,
+  getThreadById,
   deleteThread,
 };
