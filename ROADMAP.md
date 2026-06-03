@@ -13,7 +13,7 @@ Laporan strategi untuk langkah-langkah selanjutnya guna meningkatkan kualitas da
 *   **Performance Audit:** Meninjau query Prisma untuk memastikan penggunaan `include` dan `select` yang efisien guna menghindari N+1 query problem.
 
 ## 🔵 Fase 3: Fitur Lanjutan & Dokumentasi (Prioritas Rendah)
-*   **Swagger/OpenAPI Documentation:** Mengintegrasikan Swagger UI agar API memiliki dokumentasi interaktif yang selalu update.
+*   [x] **Swagger/OpenAPI Documentation:** Mengintegrasikan Swagger UI agar API memiliki dokumentasi interaktif yang selalu update.
 *   **Cloudinary Integration Refinement:** Memastikan error handling saat upload gambar thread lebih tangguh.
 *   **Automated CI/CD:** Menyiapkan GitHub Actions untuk menjalankan test secara otomatis setiap kali ada push atau pull request.
 

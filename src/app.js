@@ -5,6 +5,7 @@ const pinoHttp = require('pino-http');
 
 const logger = require('./utils/logger');
 const config = require('./config');
+const setupSwagger = require('./utils/swagger');
 
 // Routes
 const subforumRoutes = require('./api/routes/subforumRoutes');
@@ -26,6 +27,9 @@ app.use(pinoHttp({ logger }));
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+// Init Swagger
+setupSwagger(app);
 
 // 2. PUBLIC ROUTES (Health Check)
 app.get('/api', (req, res) => {

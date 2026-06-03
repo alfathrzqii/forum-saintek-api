@@ -6,10 +6,64 @@ const validate = require('../middlewares/validateMiddleware');
 const { threadIdParamSchema } = require('../../validators/commonValidator');
 const { createCommentSchema } = require('../../validators/commentValidator');
 
-// Public: Melihat pohon komentar dari sebuah thread
+/**
+ * @openapi
+ * tags:
+ *   name: Comments
+ *   description: API untuk manajemen komentar (Nested Comments)
+ */
+
+/**
+ * @openapi
+ * /api/comments/thread/{threadId}:
+ *   get:
+ *     summary: Mendapatkan semua komentar dalam sebuah thread
+ *     tags: [Comments]
+ *     parameters:
+ *       - in: path
+ *         name: threadId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Pohon komentar berhasil dimuat
+ */
 router.get('/thread/:threadId', validate({ params: threadIdParamSchema }), commentController.getComments);
 
-// Protected: Menambah komentar atau membalas (reply) komentar lain
+/**
+ * @openapi
+ * /api/comments:
+ *   post:
+ *     summary: Membuat komentar baru atau membalas komentar (Reply)
+ *     tags: [Comments]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - content
+ *               - threadId
+ *             properties:
+ *               content:
+ *                 type: string
+ *                 example: Setuju banget sama pendapat ini!
+ *               threadId:
+ *                 type: string
+ *                 format: uuid
+ *               parentId:
+ *                 type: string
+ *                 format: uuid
+ *                 description: Diisi ID komentar lain jika ingin membalas (Reply)
+ *     responses:
+ *       201:
+ *         description: Komentar berhasil ditambahkan
+ */
 router.post(
   '/', 
   authenticationMiddleware, 
