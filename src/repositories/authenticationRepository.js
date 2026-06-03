@@ -1,19 +1,19 @@
 const prisma = require('../utils/prisma');
 
-const addToken = async (token) => {
-  return await prisma.authentication.create({
+const addToken = async (token, tx = prisma) => {
+  return await tx.authentication.create({
     data: { token }
   });
 };
 
-const checkToken = async (token) => {
-  return await prisma.authentication.findUnique({
+const checkToken = async (token, tx = prisma) => {
+  return await tx.authentication.findUnique({
     where: { token }
   });
 };
 
-const deleteToken = async (token) => {
-  return await prisma.authentication.delete({
+const deleteToken = async (token, tx = prisma) => {
+  return await tx.authentication.delete({
     where: { token }
   });
 };

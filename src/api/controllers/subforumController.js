@@ -3,7 +3,8 @@ const { successResponse } = require('../../utils/response');
 
 const postSubforum = async (req, res, next) => {
   try {
-    const subforum = await subforumService.createSubforum(req.body);
+    const context = { userId: req.user?.id, role: req.user?.role };
+    const subforum = await subforumService.createSubforum(context, req.body);
 
     return successResponse(res, 'Subforum berhasil dibuat', subforum, 201);
   } catch (error) {
@@ -14,7 +15,8 @@ const postSubforum = async (req, res, next) => {
 
 const getSubforums = async (req, res, next) => {
   try {
-    const subforums = await subforumService.getAllSubforums();
+    const context = { userId: req.user?.id, role: req.user?.role };
+    const subforums = await subforumService.getAllSubforums(context);
     return successResponse(res, 'Daftar subforum berhasil dimuat', subforums);
   } catch (error) {
     next(error); 
@@ -23,8 +25,9 @@ const getSubforums = async (req, res, next) => {
 
 const getSubforumBySlug = async (req, res, next) => {
   try {
+    const context = { userId: req.user?.id, role: req.user?.role };
     const { slug } = req.params;
-    const subforum = await subforumService.getSubforumBySlug(slug);
+    const subforum = await subforumService.getSubforumBySlug(context, slug);
     return successResponse(res, 'Detail subforum berhasil dimuat', subforum);
   } catch (error) {
     next(error);

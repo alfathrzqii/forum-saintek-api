@@ -16,8 +16,9 @@ const postThread = async (req, res, next) => {
 
 const getThreads = async (req, res, next) => {
   try {
+    const context = { userId: req.user?.id, role: req.user?.role };
     const { subforum } = req.query; 
-    const threads = await threadService.getAllThreads(subforum);
+    const threads = await threadService.getAllThreads(context, subforum);
 
     return successResponse(res, 'Daftar thread berhasil dimuat', threads);
   } catch (error) {
@@ -27,8 +28,9 @@ const getThreads = async (req, res, next) => {
 
 const getThreadById = async (req, res, next) => {
   try {
+    const context = { userId: req.user?.id, role: req.user?.role };
     const { id } = req.params;
-    const thread = await threadService.getThreadById(id);
+    const thread = await threadService.getThreadById(context, id);
 
     return successResponse(res, 'Detail thread berhasil dimuat', thread);
   } catch (error) {
@@ -40,7 +42,7 @@ const deleteThread = async (req, res, next) => {
   try {
     const { id } = req.params;
     const context = { userId: req.user.id, role: req.user.role };
-    await threadService.deleteThread(id, context);
+    await threadService.deleteThread(context, id);
 
     return successResponse(res, 'Thread berhasil dihapus');
   } catch (error) {

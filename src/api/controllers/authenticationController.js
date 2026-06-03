@@ -3,7 +3,8 @@ const { successResponse } = require('../../utils/response');
 
 const postAuthentication = async (req, res, next) => {
   try {
-    const { accessToken, refreshToken } = await authenticationService.login(req.body);
+    const context = {};
+    const { accessToken, refreshToken } = await authenticationService.login(context, req.body);
 
     return successResponse(res, 'Authentication berhasil ditambahkan', { accessToken, refreshToken }, 201);
   } catch (error) {
@@ -13,8 +14,9 @@ const postAuthentication = async (req, res, next) => {
 
 const putAuthentication = async (req, res, next) => {
   try {
+    const context = {};
     const { refreshToken } = req.body;
-    const accessToken = await authenticationService.refresh(refreshToken);
+    const accessToken = await authenticationService.refresh(context, refreshToken);
 
     return successResponse(res, 'Access Token berhasil diperbarui', { accessToken });
   } catch (error) {
@@ -24,8 +26,9 @@ const putAuthentication = async (req, res, next) => {
 
 const deleteAuthentication = async (req, res, next) => {
   try {
+    const context = {};
     const { refreshToken } = req.body;
-    await authenticationService.logout(refreshToken);
+    await authenticationService.logout(context, refreshToken);
 
     return successResponse(res, 'Refresh token berhasil dihapus (Logout berhasil)');
   } catch (error) {

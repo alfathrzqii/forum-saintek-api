@@ -1,7 +1,7 @@
 const prisma = require('../utils/prisma');
 
-const getExistingVote = async (userId, target) => {
-  return await prisma.vote.findFirst({
+const getExistingVote = async (userId, target, tx = prisma) => {
+  return await tx.vote.findFirst({
     where: {
       userId,
       OR: [
@@ -12,19 +12,19 @@ const getExistingVote = async (userId, target) => {
   });
 };
 
-const upsertVote = async (userId, data) => {
+const upsertVote = async (userId, data, tx = prisma) => {
   // Kita gunakan ID unik gabungan jika sudah ada, atau buat baru
-  return await prisma.vote.create({
+  return await tx.vote.create({
     data: { ...data, userId }
   });
 };
 
-const deleteVote = async (id) => {
-  return await prisma.vote.delete({ where: { id } });
+const deleteVote = async (id, tx = prisma) => {
+  return await tx.vote.delete({ where: { id } });
 };
 
-const updateVoteType = async (id, type) => {
-  return await prisma.vote.update({
+const updateVoteType = async (id, type, tx = prisma) => {
+  return await tx.vote.update({
     where: { id },
     data: { type }
   });

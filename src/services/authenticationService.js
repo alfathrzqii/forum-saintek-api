@@ -13,7 +13,7 @@ const generateTokens = (payload) => {
   return { accessToken, refreshToken };
 };
 
-const login = async ({ email, password }) => {
+const login = async (context, { email, password }) => {
   const user = await userRepository.findUserByEmail(email);
   if (!user || !(await bcrypt.compare(password, user.password))) {
     throw new AuthenticationError('Kredensial tidak valid');
@@ -28,7 +28,7 @@ const login = async ({ email, password }) => {
   return { accessToken, refreshToken };
 };
 
-const refresh = async (refreshToken) => {
+const refresh = async (context, refreshToken) => {
   // 1. Cek apakah token ada di DB
   const tokenInDb = await authRepository.checkToken(refreshToken);
   if (!tokenInDb) throw new InvariantError('Refresh token tidak valid');
@@ -50,7 +50,7 @@ const refresh = async (refreshToken) => {
   }
 };
 
-const logout = async (refreshToken) => {
+const logout = async (context, refreshToken) => {
   const tokenInDb = await authRepository.checkToken(refreshToken);
   if (!tokenInDb) throw new InvariantError('Refresh token tidak valid');
   await authRepository.deleteToken(refreshToken);

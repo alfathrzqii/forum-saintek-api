@@ -1,18 +1,29 @@
 const prisma = require('../utils/prisma');
 
-const createComment = async (data) => {
-  return await prisma.comment.create({
+const createComment = async (data, tx = prisma) => {
+  return await tx.comment.create({
     data,
-    include: {
+    select: {
+      id: true,
+      content: true,
+      authorId: true,
+      createdAt: true,
+      parentId: true,
+      threadId: true,
       author: { select: { username: true, fullName: true } }
     }
   });
 };
 
-const getCommentsByThread = async (threadId) => {
-  return await prisma.comment.findMany({
+const getCommentsByThread = async (threadId, tx = prisma) => {
+  return await tx.comment.findMany({
     where: { threadId },
-    include: {
+    select: {
+      id: true,
+      content: true,
+      authorId: true,
+      createdAt: true,
+      parentId: true,
       author: { select: { username: true, fullName: true } },
       _count: { select: { votes: true } }
     },
@@ -20,8 +31,8 @@ const getCommentsByThread = async (threadId) => {
   });
 };
 
-const getCommentById = async (id) => {
-  return await prisma.comment.findUnique({
+const getCommentById = async (id, tx = prisma) => {
+  return await tx.comment.findUnique({
     where: { id }
   });
 };

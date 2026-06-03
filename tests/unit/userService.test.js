@@ -5,11 +5,16 @@ const InvariantError = require('../../src/exceptions/InvariantError');
 
 jest.mock('../../src/repositories/userRepository');
 jest.mock('bcrypt');
+jest.mock('../../src/utils/prisma', () => ({
+  $transaction: jest.fn((callback) => callback('tx_client')),
+}));
 
 describe('userService Unit Test', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
+
+  const context = { userId: 'admin-1', role: 'ADMIN' };
 
   describe('register', () => {
     it('should throw InvariantError when email already exists', async () => {
@@ -18,9 +23,9 @@ describe('userService Unit Test', () => {
       userRepository.findUserByEmail.mockResolvedValue({ id: '1', email: 'test@example.com' });
 
       // Action & Assert
-      await expect(userService.register(userData))
+      await expect(userService.register(context, userData))
         .rejects.toThrow(InvariantError);
-      expect(userRepository.findUserByEmail).toHaveBeenCalledWith(userData.email);
+      expect(userRepository.findUserByEmail).toHaveBeenCalledWith(userData.email, 'tx_client');
     });
 
     it('should throw InvariantError when username already exists', async () => {
@@ -30,9 +35,9 @@ describe('userService Unit Test', () => {
       userRepository.findUserByUsername.mockResolvedValue({ id: '1', username: 'testuser' });
 
       // Action & Assert
-      await expect(userService.register(userData))
+      await expect(userService.register(context, userData))
         .rejects.toThrow(InvariantError);
-      expect(userRepository.findUserByUsername).toHaveBeenCalledWith(userData.username);
+      expect(userRepository.findUserByUsername).toHaveBeenCalledWith(userData.username, 'tx_client');
     });
 
     it('should return created user when data is valid', async () => {
@@ -60,16 +65,18 @@ describe('userService Unit Test', () => {
       userRepository.createUser.mockResolvedValue(expectedUser);
 
       // Action
-      const result = await userService.register(userData);
+      const result = await userService.register(context, userData);
 
       // Assert
       expect(result).toEqual(expectedUser);
+      expect(userRepository.findUserByEmail).toHaveBeenCalledWith(userData.email, 'tx_client');
+      expect(userRepository.findUserByUsername).toHaveBeenCalledWith(userData.username, 'tx_client');
       expect(bcrypt.hash).toHaveBeenCalledWith(userData.password, 10);
       expect(userRepository.createUser).toHaveBeenCalledWith({
         ...userData,
         password: hashedPassword,
         role: 'USER'
-      });
+      }, 'tx_client');
     });
   });
 
@@ -83,7 +90,7 @@ describe('userService Unit Test', () => {
       userRepository.findAllUsers.mockResolvedValue(expectedUsers);
 
       // Action
-      const result = await userService.getAllUsers();
+      const result = await userService.getAllUsers(context);
 
       // Assert
       expect(result).toEqual(expectedUsers);

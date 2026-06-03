@@ -24,7 +24,7 @@ describe('authenticationService Unit Test', () => {
       userRepository.findUserByEmail.mockResolvedValue(null);
 
       // Action & Assert
-      await expect(authenticationService.login(credentials))
+      await expect(authenticationService.login({}, credentials))
         .rejects.toThrow(AuthenticationError);
     });
 
@@ -36,7 +36,7 @@ describe('authenticationService Unit Test', () => {
       bcrypt.compare.mockResolvedValue(false);
 
       // Action & Assert
-      await expect(authenticationService.login(credentials))
+      await expect(authenticationService.login({}, credentials))
         .rejects.toThrow(AuthenticationError);
     });
 
@@ -50,7 +50,7 @@ describe('authenticationService Unit Test', () => {
       jwt.sign.mockReturnValueOnce('accessToken').mockReturnValueOnce('refreshToken');
 
       // Action
-      const result = await authenticationService.login(credentials);
+      const result = await authenticationService.login({}, credentials);
 
       // Assert
       expect(result).toEqual({ accessToken: 'accessToken', refreshToken: 'refreshToken' });
@@ -64,7 +64,7 @@ describe('authenticationService Unit Test', () => {
       authRepository.checkToken.mockResolvedValue(null);
 
       // Action & Assert
-      await expect(authenticationService.refresh('invalidToken'))
+      await expect(authenticationService.refresh({}, 'invalidToken'))
         .rejects.toThrow(InvariantError);
     });
 
@@ -74,7 +74,7 @@ describe('authenticationService Unit Test', () => {
       jwt.verify.mockImplementation(() => { throw new Error('Expired'); });
 
       // Action & Assert
-      await expect(authenticationService.refresh('expiredToken'))
+      await expect(authenticationService.refresh({}, 'expiredToken'))
         .rejects.toThrow(AuthenticationError);
     });
 
@@ -87,7 +87,7 @@ describe('authenticationService Unit Test', () => {
       jwt.sign.mockReturnValue('newAccessToken');
 
       // Action
-      const result = await authenticationService.refresh(refreshToken);
+      const result = await authenticationService.refresh({}, refreshToken);
 
       // Assert
       expect(result).toBe('newAccessToken');
@@ -101,7 +101,7 @@ describe('authenticationService Unit Test', () => {
       authRepository.checkToken.mockResolvedValue(null);
 
       // Action & Assert
-      await expect(authenticationService.logout('invalidToken'))
+      await expect(authenticationService.logout({}, 'invalidToken'))
         .rejects.toThrow(InvariantError);
     });
 
@@ -111,7 +111,7 @@ describe('authenticationService Unit Test', () => {
       authRepository.checkToken.mockResolvedValue({ token: refreshToken });
 
       // Action
-      await authenticationService.logout(refreshToken);
+      await authenticationService.logout({}, refreshToken);
 
       // Assert
       expect(authRepository.deleteToken).toHaveBeenCalledWith(refreshToken);
