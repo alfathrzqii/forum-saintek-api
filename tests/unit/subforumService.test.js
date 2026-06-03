@@ -4,11 +4,16 @@ const InvariantError = require('../../src/exceptions/InvariantError');
 const NotFoundError = require('../../src/exceptions/NotFoundError');
 
 jest.mock('../../src/repositories/subforumRepository');
+jest.mock('../../src/utils/prisma', () => ({
+  $transaction: jest.fn((callback) => callback('tx_client')),
+}));
 
 describe('subforumService Unit Test', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
+
+  const context = { userId: 'admin-1', role: 'ADMIN' };
 
   describe('createSubforum', () => {
     it('should throw InvariantError when subforum name already exists', async () => {
@@ -17,9 +22,9 @@ describe('subforumService Unit Test', () => {
       subforumRepository.getSubforumByName.mockResolvedValue({ id: '1', name: 'Sains Data' });
 
       // Action & Assert
-      await expect(subforumService.createSubforum(data))
+      await expect(subforumService.createSubforum(context, data))
         .rejects.toThrow(InvariantError);
-      expect(subforumRepository.getSubforumByName).toHaveBeenCalledWith(data.name);
+      expect(subforumRepository.getSubforumByName).toHaveBeenCalledWith(data.name, 'tx_client');
     });
 
     it('should return created subforum when data is valid', async () => {
@@ -31,7 +36,7 @@ describe('subforumService Unit Test', () => {
       subforumRepository.createSubforum.mockResolvedValue(expectedSubforum);
 
       // Action
-      const result = await subforumService.createSubforum(data);
+      const result = await subforumService.createSubforum(context, data);
 
       // Assert
       expect(result).toEqual(expectedSubforum);
@@ -39,7 +44,7 @@ describe('subforumService Unit Test', () => {
         name: data.name,
         slug: 'informatika',
         description: data.description,
-      });
+      }, 'tx_client');
     });
   });
 
@@ -49,7 +54,7 @@ describe('subforumService Unit Test', () => {
       subforumRepository.getSubforumBySlug.mockResolvedValue(null);
 
       // Action & Assert
-      await expect(subforumService.getSubforumBySlug('non-existent'))
+      await expect(subforumService.getSubforumBySlug(context, 'non-existent'))
         .rejects.toThrow(NotFoundError);
     });
 
@@ -59,7 +64,7 @@ describe('subforumService Unit Test', () => {
       subforumRepository.getSubforumBySlug.mockResolvedValue(expectedSubforum);
 
       // Action
-      const result = await subforumService.getSubforumBySlug('sains-data');
+      const result = await subforumService.getSubforumBySlug(context, 'sains-data');
 
       // Assert
       expect(result).toEqual(expectedSubforum);

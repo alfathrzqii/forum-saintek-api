@@ -14,25 +14,41 @@ const mapThreadAuthor = (thread) => {
   return thread;
 };
 
-const createThread = async (data) => {
-  const thread = await prisma.thread.create({
+const createThread = async (data, tx = prisma) => {
+  const thread = await tx.thread.create({
     data,
-    include: {
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      imageUrl: true,
+      isAnonymous: true,
+      authorId: true,
+      createdAt: true,
       author: {
         select: { username: true, fullName: true }
       },
       subforum: {
-        select: { name: true }
+        select: { name: true, slug: true }
+      },
+      _count: {
+        select: { comments: true, votes: true }
       }
     }
   });
   return mapThreadAuthor(thread);
 };
 
-const getThreads = async (filters = {}) => {
-  const threads = await prisma.thread.findMany({
+const getThreads = async (filters = {}, tx = prisma) => {
+  const threads = await tx.thread.findMany({
     where: filters,
-    include: {
+    select: {
+      id: true,
+      title: true,
+      imageUrl: true,
+      isAnonymous: true,
+      authorId: true,
+      createdAt: true,
       author: {
         select: { username: true, fullName: true }
       },
@@ -48,10 +64,17 @@ const getThreads = async (filters = {}) => {
   return threads.map(mapThreadAuthor);
 };
 
-const getThreadById = async (id) => {
-  const thread = await prisma.thread.findUnique({
+const getThreadById = async (id, tx = prisma) => {
+  const thread = await tx.thread.findUnique({
     where: { id },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      imageUrl: true,
+      isAnonymous: true,
+      authorId: true,
+      createdAt: true,
       author: {
         select: { id: true, username: true, fullName: true, prodi: true }
       },
@@ -67,8 +90,8 @@ const getThreadById = async (id) => {
 };
 
 
-const deleteThread = async (id) => {
-  return await prisma.thread.delete({
+const deleteThread = async (id, tx = prisma) => {
+  return await tx.thread.delete({
     where: { id }
   });
 };

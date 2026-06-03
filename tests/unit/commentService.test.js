@@ -5,6 +5,9 @@ const NotFoundError = require('../../src/exceptions/NotFoundError');
 
 jest.mock('../../src/repositories/commentRepository');
 jest.mock('../../src/repositories/threadRepository');
+jest.mock('../../src/utils/prisma', () => ({
+  $transaction: jest.fn((callback) => callback('tx_client')),
+}));
 
 describe('commentService Unit Test', () => {
   afterEach(() => {
@@ -22,6 +25,7 @@ describe('commentService Unit Test', () => {
       // Action & Assert
       await expect(commentService.createComment(context, data))
         .rejects.toThrow(NotFoundError);
+      expect(threadRepository.getThreadById).toHaveBeenCalledWith(data.threadId, 'tx_client');
     });
 
     it('should throw NotFoundError when parentId not found', async () => {
@@ -33,6 +37,8 @@ describe('commentService Unit Test', () => {
       // Action & Assert
       await expect(commentService.createComment(context, data))
         .rejects.toThrow(NotFoundError);
+      expect(threadRepository.getThreadById).toHaveBeenCalledWith(data.threadId, 'tx_client');
+      expect(commentRepository.getCommentById).toHaveBeenCalledWith(data.parentId, 'tx_client');
     });
 
     it('should return created comment when data is valid', async () => {
@@ -47,12 +53,13 @@ describe('commentService Unit Test', () => {
 
       // Assert
       expect(result).toEqual(expectedComment);
+      expect(threadRepository.getThreadById).toHaveBeenCalledWith(data.threadId, 'tx_client');
       expect(commentRepository.createComment).toHaveBeenCalledWith({
         content: data.content,
         threadId: data.threadId,
         parentId: undefined,
         authorId: context.userId
-      });
+      }, 'tx_client');
     });
   });
 
@@ -68,7 +75,7 @@ describe('commentService Unit Test', () => {
       commentRepository.getCommentsByThread.mockResolvedValue(flatComments);
 
       // Action
-      const result = await commentService.getThreadComments('t-1');
+      const result = await commentService.getThreadComments(context, 't-1');
 
       // Assert
       expect(result.length).toBe(2);

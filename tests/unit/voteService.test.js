@@ -2,6 +2,9 @@ const voteService = require('../../src/services/voteService');
 const voteRepository = require('../../src/repositories/voteRepository');
 
 jest.mock('../../src/repositories/voteRepository');
+jest.mock('../../src/utils/prisma', () => ({
+  $transaction: jest.fn((callback) => callback('tx_client')),
+}));
 
 describe('voteService Unit Test', () => {
   afterEach(() => {
@@ -22,7 +25,8 @@ describe('voteService Unit Test', () => {
 
       // Assert
       expect(result).toEqual({ action: 'deleted' });
-      expect(voteRepository.deleteVote).toHaveBeenCalledWith(existingVote.id);
+      expect(voteRepository.getExistingVote).toHaveBeenCalledWith(context.userId, { threadId: 'thread-1', commentId: undefined }, 'tx_client');
+      expect(voteRepository.deleteVote).toHaveBeenCalledWith(existingVote.id, 'tx_client');
     });
 
     it('should update vote type when existing vote has different type', async () => {
@@ -36,7 +40,8 @@ describe('voteService Unit Test', () => {
 
       // Assert
       expect(result).toEqual({ action: 'updated' });
-      expect(voteRepository.updateVoteType).toHaveBeenCalledWith(existingVote.id, 'DOWN');
+      expect(voteRepository.getExistingVote).toHaveBeenCalledWith(context.userId, { threadId: 'thread-1', commentId: undefined }, 'tx_client');
+      expect(voteRepository.updateVoteType).toHaveBeenCalledWith(existingVote.id, 'DOWN', 'tx_client');
     });
 
     it('should create new vote when no existing vote found', async () => {
@@ -49,7 +54,8 @@ describe('voteService Unit Test', () => {
 
       // Assert
       expect(result).toEqual({ action: 'created' });
-      expect(voteRepository.upsertVote).toHaveBeenCalledWith(context.userId, voteData);
+      expect(voteRepository.getExistingVote).toHaveBeenCalledWith(context.userId, { threadId: undefined, commentId: 'comment-1' }, 'tx_client');
+      expect(voteRepository.upsertVote).toHaveBeenCalledWith(context.userId, voteData, 'tx_client');
     });
   });
 });

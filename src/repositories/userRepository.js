@@ -1,15 +1,35 @@
 const prisma = require('../utils/prisma');
 
-const findUserByEmail = async (email) => {
-  return await prisma.user.findUnique({ where: { email } });
+const findUserByEmail = async (email, tx = prisma) => {
+  return await tx.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      password: true,
+      fullName: true,
+      prodi: true,
+      role: true
+    }
+  });
 };
 
-const findUserByUsername = async (username) => {
-  return await prisma.user.findUnique({ where: { username } });
+const findUserByUsername = async (username, tx = prisma) => {
+  return await tx.user.findUnique({
+    where: { username },
+    select: {
+      id: true,
+      username: true,
+      fullName: true,
+      prodi: true,
+      role: true
+    }
+  });
 };
 
-const findUserById = async (id) => {
-  return await prisma.user.findUnique({
+const findUserById = async (id, tx = prisma) => {
+  return await tx.user.findUnique({
     where: { id },
     select: { 
       id: true,
@@ -22,8 +42,8 @@ const findUserById = async (id) => {
   });
 };
 
-const createUser = async (userData) => {
-  return await prisma.user.create({
+const createUser = async (userData, tx = prisma) => {
+  return await tx.user.create({
     data: userData,
     select: {
       id: true,
@@ -37,8 +57,8 @@ const createUser = async (userData) => {
   });
 };
 
-const findAllUsers = async () => {
-  return await prisma.user.findMany({
+const findAllUsers = async (tx = prisma) => {
+  return await tx.user.findMany({
     select: {
       id: true,
       email: true,

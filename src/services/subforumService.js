@@ -2,24 +2,28 @@ const subforumRepository = require('../repositories/subforumRepository');
 const InvariantError = require('../exceptions/InvariantError');
 const NotFoundError = require('../exceptions/NotFoundError');
 
-const createSubforum = async ({ name, description }) => {
-  // 1. Cek apakah nama sudah ada
-  const existing = await subforumRepository.getSubforumByName(name);
-  if (existing) {
-    throw new InvariantError('Nama subforum sudah digunakan');
-  }
+const prisma = require('../utils/prisma');
 
-  // 2. Buat slug sederhana (lowercase & ganti spasi jadi dash)
-  const slug = name.toLowerCase().split(' ').join('-');
+const createSubforum = async (context, { name, description }) => {
+  return await prisma.$transaction(async (tx) => {
+    // 1. Cek apakah nama sudah ada
+    const existing = await subforumRepository.getSubforumByName(name, tx);
+    if (existing) {
+      throw new InvariantError('Nama subforum sudah digunakan');
+    }
 
-  return await subforumRepository.createSubforum({ name, slug, description });
+    // 2. Buat slug sederhana (lowercase & ganti spasi jadi dash)
+    const slug = name.toLowerCase().split(' ').join('-');
+
+    return await subforumRepository.createSubforum({ name, slug, description }, tx);
+  });
 };
 
-const getAllSubforums = async () => {
+const getAllSubforums = async (context) => {
   return await subforumRepository.getAllSubforums();
 };
 
-const getSubforumBySlug = async (slug) => {
+const getSubforumBySlug = async (context, slug) => {
   const subforum = await subforumRepository.getSubforumBySlug(slug);
   if (!subforum) {
     throw new NotFoundError('Subforum tidak ditemukan');

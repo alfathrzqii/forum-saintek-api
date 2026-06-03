@@ -6,6 +6,9 @@ const AuthorizationError = require('../../src/exceptions/AuthorizationError');
 
 jest.mock('../../src/repositories/threadRepository');
 jest.mock('../../src/repositories/subforumRepository');
+jest.mock('../../src/utils/prisma', () => ({
+  $transaction: jest.fn((callback) => callback('tx_client')),
+}));
 
 describe('threadService Unit Test', () => {
   afterEach(() => {
@@ -23,6 +26,7 @@ describe('threadService Unit Test', () => {
       // Action & Assert
       await expect(threadService.createThread(context, data))
         .rejects.toThrow(NotFoundError);
+      expect(subforumRepository.getSubforumBySlug).toHaveBeenCalledWith(data.subforumSlug, 'tx_client');
     });
 
     it('should return created thread when data is valid', async () => {
@@ -39,6 +43,7 @@ describe('threadService Unit Test', () => {
 
       // Assert
       expect(result).toEqual(expectedThread);
+      expect(subforumRepository.getSubforumBySlug).toHaveBeenCalledWith(data.subforumSlug, 'tx_client');
       expect(threadRepository.createThread).toHaveBeenCalledWith({
         title: data.title,
         content: data.content,
@@ -46,7 +51,7 @@ describe('threadService Unit Test', () => {
         imageUrl: null,
         authorId: context.userId,
         subforumId: subforum.id
-      });
+      }, 'tx_client');
     });
   });
 
@@ -59,7 +64,7 @@ describe('threadService Unit Test', () => {
       threadRepository.getThreads.mockResolvedValue(expectedThreads);
 
       // Action
-      const result = await threadService.getAllThreads('sains-data');
+      const result = await threadService.getAllThreads(context, 'sains-data');
 
       // Assert
       expect(result).toEqual(expectedThreads);
@@ -72,7 +77,7 @@ describe('threadService Unit Test', () => {
       threadRepository.getThreads.mockResolvedValue(expectedThreads);
 
       // Action
-      const result = await threadService.getAllThreads();
+      const result = await threadService.getAllThreads(context);
 
       // Assert
       expect(result).toEqual(expectedThreads);
@@ -86,8 +91,9 @@ describe('threadService Unit Test', () => {
       threadRepository.getThreadById.mockResolvedValue(null);
 
       // Action & Assert
-      await expect(threadService.deleteThread('t-1', context))
+      await expect(threadService.deleteThread(context, 't-1'))
         .rejects.toThrow(NotFoundError);
+      expect(threadRepository.getThreadById).toHaveBeenCalledWith('t-1', 'tx_client');
     });
 
     it('should throw AuthorizationError when user is not author and not ADMIN', async () => {
@@ -96,8 +102,9 @@ describe('threadService Unit Test', () => {
       threadRepository.getThreadById.mockResolvedValue(thread);
 
       // Action & Assert
-      await expect(threadService.deleteThread('t-1', context))
+      await expect(threadService.deleteThread(context, 't-1'))
         .rejects.toThrow(AuthorizationError);
+      expect(threadRepository.getThreadById).toHaveBeenCalledWith('t-1', 'tx_client');
     });
 
     it('should delete thread when user is author', async () => {
@@ -106,10 +113,11 @@ describe('threadService Unit Test', () => {
       threadRepository.getThreadById.mockResolvedValue(thread);
 
       // Action
-      await threadService.deleteThread('t-1', context);
+      await threadService.deleteThread(context, 't-1');
 
       // Assert
-      expect(threadRepository.deleteThread).toHaveBeenCalledWith('t-1');
+      expect(threadRepository.getThreadById).toHaveBeenCalledWith('t-1', 'tx_client');
+      expect(threadRepository.deleteThread).toHaveBeenCalledWith('t-1', 'tx_client');
     });
 
     it('should delete thread when user is ADMIN', async () => {
@@ -119,10 +127,11 @@ describe('threadService Unit Test', () => {
       threadRepository.getThreadById.mockResolvedValue(thread);
 
       // Action
-      await threadService.deleteThread('t-1', adminContext);
+      await threadService.deleteThread(adminContext, 't-1');
 
       // Assert
-      expect(threadRepository.deleteThread).toHaveBeenCalledWith('t-1');
+      expect(threadRepository.getThreadById).toHaveBeenCalledWith('t-1', 'tx_client');
+      expect(threadRepository.deleteThread).toHaveBeenCalledWith('t-1', 'tx_client');
     });
   });
 });

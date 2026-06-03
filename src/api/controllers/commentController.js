@@ -15,8 +15,9 @@ const postComment = async (req, res, next) => {
 
 const getComments = async (req, res, next) => {
   try {
+    const context = { userId: req.user?.id, role: req.user?.role };
     const { threadId } = req.params;
-    const comments = await commentService.getThreadComments(threadId);
+    const comments = await commentService.getThreadComments(context, threadId);
 
     return successResponse(res, 'Daftar komentar berhasil dimuat', comments);
   } catch (error) {
