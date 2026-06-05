@@ -12,8 +12,12 @@ const options = {
     },
     servers: [
       {
-        url: `${config.app.baseUrl}:${config.app.port}`,
-        description: 'Development Server',
+        url: 'https://api.forumsaintek.my.id/api',
+        description: 'Production Server',
+      },
+      {
+        url: `http://localhost:${config.app.port}/api`,
+        description: 'Development Server (Local)',
       },
     ],
     components: {

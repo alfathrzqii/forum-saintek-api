@@ -14,7 +14,7 @@ const { voteSchema } = require('../../validators/voteValidator');
 
 /**
  * @openapi
- * /api/votes:
+ * /votes:
  *   post:
  *     summary: Melakukan voting pada thread atau komentar (Toggle)
  *     tags: [Votes]

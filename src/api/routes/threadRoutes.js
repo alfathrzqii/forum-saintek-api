@@ -15,7 +15,7 @@ const { createThreadSchema } = require('../../validators/threadValidator');
 
 /**
  * @openapi
- * /api/threads:
+ * /threads:
  *   get:
  *     summary: Mendapatkan semua daftar thread
  *     tags: [Threads]
@@ -33,7 +33,7 @@ router.get('/', threadController.getThreads);
 
 /**
  * @openapi
- * /api/threads/{id}:
+ * /threads/{id}:
  *   get:
  *     summary: Mendapatkan detail thread berdasarkan ID
  *     tags: [Threads]
@@ -54,7 +54,7 @@ router.get('/:id', validate({ params: idParamSchema }), threadController.getThre
 
 /**
  * @openapi
- * /api/threads:
+ * /threads:
  *   post:
  *     summary: Membuat thread baru
  *     tags: [Threads]
@@ -101,7 +101,7 @@ router.post(
 
 /**
  * @openapi
- * /api/threads/{id}:
+ * /threads/{id}:
  *   delete:
  *     summary: Menghapus thread (Pemilik atau Admin)
  *     tags: [Threads]

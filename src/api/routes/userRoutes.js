@@ -15,7 +15,7 @@ const { successResponse } = require('../../utils/response');
 
 /**
  * @openapi
- * /api/users:
+ * /users:
  *   post:
  *     summary: Registrasi user baru
  *     tags: [Users]
@@ -57,7 +57,7 @@ router.post('/', authLimiter, userController.postUser);
 
 /**
  * @openapi
- * /api/users/me:
+ * /users/me:
  *   get:
  *     summary: Mendapatkan profil user yang sedang login
  *     tags: [Users]
@@ -75,7 +75,7 @@ router.get('/me', authenticationMiddleware, (req, res) => {
 
 /**
  * @openapi
- * /api/users:
+ * /users:
  *   get:
  *     summary: Mendapatkan semua daftar user (Hanya Admin)
  *     tags: [Users]

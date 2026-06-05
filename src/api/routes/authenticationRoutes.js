@@ -14,7 +14,7 @@ const { loginSchema, refreshTokenSchema } = require('../../validators/authentica
 
 /**
  * @openapi
- * /api/authentications:
+ * /authentications:
  *   post:
  *     summary: Login user
  *     tags: [Authentications]
@@ -46,7 +46,7 @@ router.post('/', authLimiter, validate({ body: loginSchema }), authController.po
 
 /**
  * @openapi
- * /api/authentications:
+ * /authentications:
  *   put:
  *     summary: Refresh Access Token
  *     tags: [Authentications]
@@ -71,7 +71,7 @@ router.put('/', validate({ body: refreshTokenSchema }), authController.putAuthen
 
 /**
  * @openapi
- * /api/authentications:
+ * /authentications:
  *   delete:
  *     summary: Logout user
  *     tags: [Authentications]

@@ -15,7 +15,7 @@ const { createCommentSchema } = require('../../validators/commentValidator');
 
 /**
  * @openapi
- * /api/comments/thread/{threadId}:
+ * /comments/thread/{threadId}:
  *   get:
  *     summary: Mendapatkan semua komentar dalam sebuah thread
  *     tags: [Comments]
@@ -34,7 +34,7 @@ router.get('/thread/:threadId', validate({ params: threadIdParamSchema }), comme
 
 /**
  * @openapi
- * /api/comments:
+ * /comments:
  *   post:
  *     summary: Membuat komentar baru atau membalas komentar (Reply)
  *     tags: [Comments]

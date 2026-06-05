@@ -16,7 +16,7 @@ const { createSubforumSchema } = require('../../validators/subforumValidator');
 
 /**
  * @openapi
- * /api/subforums:
+ * /subforums:
  *   get:
  *     summary: Mendapatkan semua daftar subforum
  *     tags: [Subforums]
@@ -28,7 +28,7 @@ router.get('/', subforumController.getSubforums);
 
 /**
  * @openapi
- * /api/subforums/{slug}:
+ * /subforums/{slug}:
  *   get:
  *     summary: Mendapatkan detail subforum berdasarkan slug
  *     tags: [Subforums]
@@ -49,7 +49,7 @@ router.get('/:slug', subforumController.getSubforumBySlug);
 
 /**
  * @openapi
- * /api/subforums:
+ * /subforums:
  *   post:
  *     summary: Membuat subforum baru (Hanya Admin)
  *     tags: [Subforums]
