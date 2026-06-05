@@ -1,4 +1,5 @@
 const express = require('express');
+const compression = require('compression');
 const cors = require('cors');
 const helmet = require('helmet');
 const pinoHttp = require('pino-http');
@@ -28,6 +29,7 @@ app.set('trust proxy', 1);
 // 1. MIDDLEWARE DASAR (Keamanan & Logging)
 const { globalLimiter } = require('./api/middlewares/rateLimitMiddleware');
 app.use(globalLimiter);
+app.use(compression());
 app.use(pinoHttp({ logger }));
 app.use(helmet());
 app.use(cors());
