@@ -16,7 +16,7 @@ const options = {
         description: 'Production Server',
       },
       {
-        url: `http://localhost:${config.app.port}/api`,
+        url: `${config.app.baseUrl}/api`,
         description: 'Development Server (Local)',
       },
     ],
