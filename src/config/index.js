@@ -7,6 +7,7 @@ const config = {
     port: parseInt(process.env.PORT, 10) || 3000,
     nodeEnv: process.env.NODE_ENV || 'development',
     baseUrl: process.env.BASE_URL || 'http://localhost',
+    allowedOrigins: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['*'],
   },
   jwt: {
     accessTokenKey: process.env.ACCESS_TOKEN_KEY,

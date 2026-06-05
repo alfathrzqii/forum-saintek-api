@@ -32,7 +32,11 @@ app.use(globalLimiter);
 app.use(compression());
 app.use(pinoHttp({ logger }));
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: config.app.allowedOrigins,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 
 // Init Swagger
