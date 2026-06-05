@@ -15,6 +15,7 @@ const authenticationRoutes = require('./api/routes/authenticationRoutes');
 const threadRoutes = require('./api/routes/threadRoutes');
 const commentRoutes = require('./api/routes/commentRoutes');
 const voteRoutes = require('./api/routes/voteRoutes');
+const healthRoutes = require('./api/routes/healthRoutes');
 
 // Middlewares
 const NotFoundError = require('./exceptions/NotFoundError');
@@ -43,6 +44,7 @@ app.use(express.json());
 setupSwagger(app);
 
 // 2. PUBLIC ROUTES (Health Check)
+app.use('/api/health', healthRoutes);
 app.get('/api', (req, res) => {
   res.json({
     message: "Selamat datang di API Forum SAINTEK!, Server is running perfectly.",

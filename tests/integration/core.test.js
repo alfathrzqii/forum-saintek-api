@@ -39,6 +39,18 @@ describe('Core Infrastructure & Middleware', () => {
     });
   });
 
+  describe('GET /api/health (Robust Health Check)', () => {
+    it('should return 200 and database status connected', async () => {
+      const res = await request(app).get('/api/health');
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.status).toEqual('success');
+      expect(res.body.data.database).toEqual('connected');
+      expect(res.body.data).toHaveProperty('uptime');
+      expect(res.body.data).toHaveProperty('timestamp');
+    });
+  });
+
   describe('Global 404 Handler', () => {
     it('should return 404 JSON for non-existent routes', async () => {
       const res = await request(app).get('/api/v1/rute-yang-tidak-ada');
