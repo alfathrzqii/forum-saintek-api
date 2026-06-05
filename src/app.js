@@ -22,7 +22,12 @@ const errorMiddleware = require('./api/middlewares/errorMiddleware');
 const app = express();
 const PORT = config.app.port;
 
+// trust proxy diperlukan jika di deploy di belakang reverse proxy (Nginx, Vercel, Heroku, dll)
+app.set('trust proxy', 1);
+
 // 1. MIDDLEWARE DASAR (Keamanan & Logging)
+const { globalLimiter } = require('./api/middlewares/rateLimitMiddleware');
+app.use(globalLimiter);
 app.use(pinoHttp({ logger }));
 app.use(helmet());
 app.use(cors());

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authenticationController');
 const validate = require('../middlewares/validateMiddleware');
+const { authLimiter } = require('../middlewares/rateLimitMiddleware');
 const { loginSchema, refreshTokenSchema } = require('../../validators/authenticationValidator');
 
 /**
@@ -41,7 +42,7 @@ const { loginSchema, refreshTokenSchema } = require('../../validators/authentica
  *       401:
  *         description: Kredensial tidak valid
  */
-router.post('/', validate({ body: loginSchema }), authController.postAuthentication);
+router.post('/', authLimiter, validate({ body: loginSchema }), authController.postAuthentication);
 
 /**
  * @openapi

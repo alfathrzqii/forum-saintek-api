@@ -3,6 +3,7 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const authenticationMiddleware = require('../middlewares/authenticationMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
+const { authLimiter } = require('../middlewares/rateLimitMiddleware');
 const { successResponse } = require('../../utils/response');
 
 /**
@@ -52,7 +53,7 @@ const { successResponse } = require('../../utils/response');
  *       400:
  *         description: Email atau Username sudah digunakan
  */
-router.post('/', userController.postUser);
+router.post('/', authLimiter, userController.postUser);
 
 /**
  * @openapi
