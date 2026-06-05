@@ -45,6 +45,7 @@ const getThreads = async (filters = {}, tx = prisma) => {
     select: {
       id: true,
       title: true,
+      content: true,
       imageUrl: true,
       isAnonymous: true,
       authorId: true,

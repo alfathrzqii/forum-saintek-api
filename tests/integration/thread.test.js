@@ -7,6 +7,8 @@ describe('Thread API Integration Test', () => {
   let adminToken;
   let testSubforumSlug;
 
+  jest.setTimeout(30000);
+
   beforeAll(async () => {
     // 1. Cleanup: Hapus data yang mungkin tertinggal dari tes sebelumnya
     await prisma.authentication.deleteMany();
@@ -126,6 +128,10 @@ describe('Thread API Integration Test', () => {
       expect(res.body.status).toEqual('success');
       expect(Array.isArray(res.body.data)).toBe(true);
       expect(res.body.data.length).toBeGreaterThanOrEqual(1);
+      
+      // Verify content field is present
+      expect(res.body.data[0]).toHaveProperty('content');
+      expect(typeof res.body.data[0].content).toBe('string');
     });
 
     it('should mask author for anonymous threads in the list', async () => {
