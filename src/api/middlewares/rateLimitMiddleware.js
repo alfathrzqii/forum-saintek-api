@@ -5,6 +5,9 @@ const globalLimiter = rateLimit({
   limit: 100, // Batasi tiap IP ke 100 request per windowMs
   standardHeaders: 'draft-7', // set `RateLimit` header
   legacyHeaders: false, // Matikan `X-RateLimit-*` headers
+  keyGenerator: (req) => {
+    return req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.ip;
+  },
   message: {
     status: 'fail',
     message: 'Terlalu banyak permintaan dari IP ini, silakan coba lagi setelah 15 menit',
@@ -16,6 +19,9 @@ const authLimiter = rateLimit({
   limit: 10, // Batasi tiap IP ke 10 request login/register per jam
   standardHeaders: 'draft-7',
   legacyHeaders: false,
+  keyGenerator: (req) => {
+    return req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.ip;
+  },
   message: {
     status: 'fail',
     message: 'Terlalu banyak percobaan login/register, silakan coba lagi setelah 1 jam',
