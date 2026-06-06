@@ -4,8 +4,10 @@ const mapThreadAuthor = (thread) => {
   if (thread && thread.isAnonymous) {
     return {
       ...thread,
+      authorId: null,
       author: {
         ...thread.author,
+        id: null,
         username: 'Saintekfess User',
         fullName: 'Anonymous',
       },
