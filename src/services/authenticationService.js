@@ -46,6 +46,7 @@ const refresh = async (context, refreshToken) => {
 
     return newAccessToken;
   } catch (error) {
+    await authRepository.deleteToken(refreshToken);
     throw new AuthenticationError('Refresh token kadaluarsa');
   }
 };
