@@ -13,8 +13,13 @@ const generateTokens = (payload) => {
   return { accessToken, refreshToken };
 };
 
-const login = async (context, { email, password }) => {
-  const user = await userRepository.findUserByEmail(email);
+const login = async (context, { identifier, password }) => {
+  let user = await userRepository.findUserByEmail(identifier);
+
+  if (!user) {
+    user = await userRepository.findUserByUsername(identifier);
+  }
+
   if (!user || !(await bcrypt.compare(password, user.password))) {
     throw new AuthenticationError('Kredensial tidak valid');
   }

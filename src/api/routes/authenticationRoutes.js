@@ -25,12 +25,12 @@ const { loginSchema, refreshTokenSchema } = require('../../validators/authentica
  *           schema:
  *             type: object
  *             required:
- *               - email
+ *               - identifier
  *               - password
  *             properties:
- *               email:
+ *               identifier:
  *                 type: string
- *                 format: email
+ *                 description: Email atau username
  *                 example: user@student.uin-suka.ac.id
  *               password:
  *                 type: string

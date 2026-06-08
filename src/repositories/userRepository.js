@@ -20,7 +20,9 @@ const findUserByUsername = async (username, tx = prisma) => {
     where: { username },
     select: {
       id: true,
+      email: true,
       username: true,
+      password: true,
       fullName: true,
       prodi: true,
       role: true

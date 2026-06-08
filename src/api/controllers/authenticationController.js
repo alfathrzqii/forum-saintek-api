@@ -4,7 +4,8 @@ const { successResponse } = require('../../utils/response');
 const postAuthentication = async (req, res, next) => {
   try {
     const context = {};
-    const { accessToken, refreshToken } = await authenticationService.login(context, req.body);
+    const { identifier, password } = req.body;
+    const { accessToken, refreshToken } = await authenticationService.login(context, { identifier, password });
 
     return successResponse(res, 'Authentication berhasil ditambahkan', { accessToken, refreshToken }, 201);
   } catch (error) {

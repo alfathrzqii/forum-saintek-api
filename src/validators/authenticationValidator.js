@@ -1,7 +1,7 @@
 const { z } = require('zod');
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Format email tidak valid" }),
+  identifier: z.string().min(3, { message: "Email atau username minimal 3 karakter" }),
   password: z.string().min(1, { message: "Password harus diisi" })
 });
 
