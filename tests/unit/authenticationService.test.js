@@ -18,10 +18,11 @@ describe('authenticationService Unit Test', () => {
   });
 
   describe('login', () => {
-    it('should throw AuthenticationError when email not found', async () => {
+    it('should throw AuthenticationError when identifier (email/username) not found', async () => {
       // Arrange
-      const credentials = { email: 'non@example.com', password: 'password123' };
+      const credentials = { identifier: 'nonexistent', password: 'password123' };
       userRepository.findUserByEmail.mockResolvedValue(null);
+      userRepository.findUserByUsername.mockResolvedValue(null);
 
       // Action & Assert
       await expect(authenticationService.login({}, credentials))
@@ -30,7 +31,7 @@ describe('authenticationService Unit Test', () => {
 
     it('should throw AuthenticationError when password does not match', async () => {
       // Arrange
-      const credentials = { email: 'test@example.com', password: 'wrongpassword' };
+      const credentials = { identifier: 'test@example.com', password: 'wrongpassword' };
       const user = { id: '1', email: 'test@example.com', password: 'hashedPassword' };
       userRepository.findUserByEmail.mockResolvedValue(user);
       bcrypt.compare.mockResolvedValue(false);
@@ -40,13 +41,31 @@ describe('authenticationService Unit Test', () => {
         .rejects.toThrow(AuthenticationError);
     });
 
-    it('should return tokens when credentials are valid', async () => {
+    it('should return tokens when credentials (email) are valid', async () => {
       // Arrange
-      const credentials = { email: 'test@example.com', password: 'password123' };
+      const credentials = { identifier: 'test@example.com', password: 'password123' };
       const user = { id: '1', email: 'test@example.com', password: 'hashedPassword', role: 'USER', prodi: 'IF' };
       userRepository.findUserByEmail.mockResolvedValue(user);
       bcrypt.compare.mockResolvedValue(true);
       
+      jwt.sign.mockReturnValueOnce('accessToken').mockReturnValueOnce('refreshToken');
+
+      // Action
+      const result = await authenticationService.login({}, credentials);
+
+      // Assert
+      expect(result).toEqual({ accessToken: 'accessToken', refreshToken: 'refreshToken' });
+      expect(authRepository.addToken).toHaveBeenCalledWith('refreshToken');
+    });
+
+    it('should return tokens when credentials (username) are valid', async () => {
+      // Arrange
+      const credentials = { identifier: 'tester', password: 'password123' };
+      const user = { id: '1', username: 'tester', password: 'hashedPassword', role: 'USER', prodi: 'IF' };
+      userRepository.findUserByEmail.mockResolvedValue(null);
+      userRepository.findUserByUsername.mockResolvedValue(user);
+      bcrypt.compare.mockResolvedValue(true);
+
       jwt.sign.mockReturnValueOnce('accessToken').mockReturnValueOnce('refreshToken');
 
       // Action

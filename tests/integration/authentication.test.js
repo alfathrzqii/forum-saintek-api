@@ -43,11 +43,24 @@ describe('Authentication Resource (Session)', () => {
   });
 
   describe('POST /api/authentications', () => {
-    it('should return 201 and tokens for valid credentials', async () => {
+    it('should return 201 and tokens for valid credentials (email)', async () => {
       const res = await request(app)
         .post('/api/authentications')
         .send({
-          email: testUser.email,
+          identifier: testUser.email,
+          password: testUser.password
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.data).toHaveProperty('accessToken');
+      expect(res.body.data).toHaveProperty('refreshToken');
+    });
+
+    it('should return 201 and tokens for valid credentials (username)', async () => {
+      const res = await request(app)
+        .post('/api/authentications')
+        .send({
+          identifier: testUser.username,
           password: testUser.password
         });
 
@@ -60,7 +73,7 @@ describe('Authentication Resource (Session)', () => {
       const res = await request(app)
         .post('/api/authentications')
         .send({
-          email: testUser.email,
+          identifier: testUser.email,
           password: 'WrongPassword'
         });
 
@@ -73,7 +86,7 @@ describe('Authentication Resource (Session)', () => {
       // 1. Login dulu buat dapetin Refresh Token yang valid
       const loginRes = await request(app)
         .post('/api/authentications')
-        .send({ email: testUser.email, password: testUser.password });
+        .send({ identifier: testUser.email, password: testUser.password });
       
       const rt = loginRes.body.data.refreshToken;
 
@@ -117,7 +130,7 @@ describe('Authentication Resource (Session)', () => {
       // 1. Login dulu buat dapetin token yang mau dihapus
       const loginRes = await request(app)
         .post('/api/authentications')
-        .send({ email: testUser.email, password: testUser.password });
+        .send({ identifier: testUser.email, password: testUser.password });
       
       const rt = loginRes.body.data.refreshToken;
 
