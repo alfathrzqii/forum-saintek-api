@@ -43,7 +43,10 @@ const createThread = async (data, tx = prisma) => {
 
 const getThreads = async (filters = {}, tx = prisma) => {
   const threads = await tx.thread.findMany({
-    where: filters,
+    where: {
+      ...filters,
+      deletedAt: null // Hanya ambil yang belum dihapus
+    },
     select: {
       id: true,
       title: true,
@@ -69,7 +72,10 @@ const getThreads = async (filters = {}, tx = prisma) => {
 
 const getThreadById = async (id, tx = prisma) => {
   const thread = await tx.thread.findUnique({
-    where: { id },
+    where: { 
+      id,
+      deletedAt: null // Pastikan thread yang sudah dihapus tidak ditemukan
+    },
     select: {
       id: true,
       title: true,
@@ -94,8 +100,9 @@ const getThreadById = async (id, tx = prisma) => {
 
 
 const deleteThread = async (id, tx = prisma) => {
-  return await tx.thread.delete({
-    where: { id }
+  return await tx.thread.update({
+    where: { id },
+    data: { deletedAt: new Date() } // Soft delete: isi waktu penghapusan
   });
 };
 
