@@ -101,5 +101,38 @@ describe('Comment API Integration Test', () => {
       expect(root.replies.length).toBeGreaterThan(0);
       expect(root.replies[0]).toHaveProperty('content', 'This is a reply');
     });
+
+    it('should return anonymized author when thread is anonymous', async () => {
+      // 1. Create anonymous thread
+      const subforum = await prisma.subforum.findUnique({ where: { slug: 'test-comment-subforum' } });
+      const user = await prisma.user.findUnique({ where: { email: 'user_comment@student.uin-suka.ac.id' } });
+
+      const anonThread = await prisma.thread.create({
+        data: {
+          title: 'Anonymous Thread',
+          content: 'Secret content',
+          isAnonymous: true,
+          authorId: user.id,
+          subforumId: subforum.id
+        }
+      });
+
+      // 2. Post comment to anon thread
+      await request(app)
+        .post('/api/comments')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({
+          content: 'Secret comment',
+          threadId: anonThread.id
+        });
+
+      // 3. Get comments
+      const res = await request(app).get(`/api/comments/thread/${anonThread.id}`);
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.data[0].author.username).toEqual('Saintekfess User');
+      expect(res.body.data[0].author.fullName).toEqual('Anonymous');
+      expect(res.body.data[0].authorId).toBeNull();
+    });
   });
 });
